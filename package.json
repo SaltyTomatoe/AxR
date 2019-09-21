@@ -1,0 +1,30 @@
+{
+  "name": "encrypto-bot",
+  "version": "1.0.0",
+  "description": "sexy",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "child_process": "^1.0.2",
+    "discord.js": "^11.5.1",
+    "express": "^4.17.1",
+    "fetch": "^1.1.0",
+    "luamin": "^1.0.4",
+    "multer": "^1.4.2",
+    "node-fetch": "^2.6.0",
+    "openode": "^2.0.4",
+    "path": "^0.12.7",
+    "request": "^2.88.0",
+    "util": "^0.12.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "epic"
+  ],
+  "author": "me",
+  "license": "UNLICENSED"
+}
