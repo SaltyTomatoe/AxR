@@ -27,42 +27,9 @@ function msleep(n) {
     msleep(n*1000);
   }
 bot.on("ready", async () => {
-    //bot.user.setActivity("Call of Duty Blackout");
     bot.user.setActivity("with new obfuscation stuff", {type: "PLAYING"});
-    /*var guildList = bot.guilds.array()
-    try{
-        console.log("Configured Maps")
-        guildList.forEach(guild => {
-            var guildmap = module.exports.map.mainMap.get(guild.id);
-            if (!guildmap) {
-                module.exports.map.mainMap.set(guild.id, basicConstructor);
-                guildmap = module.exports.map.mainMap.get(guild.id)
-            }
-            var delTable = guildmap.settings.find(stuff => stuff.name === "Deleted")
-            if(delTable.delChannel===undefined){
-                guild.channels.forEach(channel => {
-                    if(channel.name.toLowerCase()==="deleted"){
-                        var settings = guildmap.settings
-                        var pos = settings.indexOf(delTable)
-                        settings.splice(pos,1)
-                        settings.push({name:"Deleted",deletedChannelFound:true,delChannel:channel.id})
-                    }
-                });
-            }
-        })
-    }catch(e){
-        console.log(e.stack)
-    }*/
     console.log("Finished setup proccesses.")
 });
-
-/*child(executablePath, ["Nerd.lua|done.lua"], function(err, data) {
-    if(err){console.log(err)};
-    let thingy = data.toString()
-    var arr = thingy.split("|");
-    console.log(thingy)
-    console.log("hey")
-});*/
 fs.readdir("./commands/", (err, files) =>{
     if(err) console.log(err);
     let jsfile = files.filter(f => f.split(".").pop() === "js")
@@ -73,15 +40,6 @@ fs.readdir("./commands/", (err, files) =>{
     jsfile.forEach((f, i) =>{
         let props = require(`./commands/${f}`);
         bot.commands.set(props.help.name, props);
-        /*if(!props.help.settings.not_shown&&!props.help.settings.not_shown===true){
-            if(props.help.settings.type==="moderation"){
-                cmds_mod.addField(props.help.name,props.help.description)
-            }else if(props.help.settings.type==="fun"){
-                cmds_fun.addField(props.help.name,props.help.description)
-            }else if(props.help.settings.type==="info"){
-                cmds_info.addField(props.help.name,props.help.description)
-            }
-        }*/
     });
 });
 var isObfuscating = false
@@ -104,7 +62,6 @@ bot.on("message",async message => {
 			else
 				return message.channel.send("Please only send .txt or .lua files, I do not accept any other file. Filetype:"+extension)
 			}
-			let nameOfText = randomstring(20)
 			let nameOfFinal = "AXR_out.lua"//randomstring(20)
 			let retr = await downloadAttachment(first.url,"AXR_in.lua")
 			let key = randomstring(16)
@@ -153,7 +110,7 @@ bot.on("message",async message => {
 							.catch(err => console.log(err));
 						});
 						isObfuscating = false
-						}catch(e){
+					}catch(e){
 						console.log(e)
 						isObfuscating = false
 					}
@@ -190,10 +147,6 @@ bot.on("message",async message => {
 })
 console.log("Logging in...")
 bot.login("NTg1OTMwNjYyMTIxNTcwMzA4.XPgoeQ.rJzr94_ktEcuBNjsEdDBnr3-G0Y")
-module.exports.info = {
-    directory:__dirname
-}
-
 function randomstring(length){
     var complete = ""
     var times = 0
@@ -235,71 +188,26 @@ function downloadAttachment(url, dest) {
 function getFileExtension(filename) {
     return filename.split('.').pop();
 }
-function checkString(stuff,arr){
-    let ret = false
-    arr.forEach(stupid => {
-        if(stuff.indexOf(stupid)>-1){
-            ret = true
-        }
-    })
-    return ret
-}
 module.exports.embeds = {
     color:"#c1b0e8"
 }
 module.exports.info = {
-    prefix:prefix
+    prefix:prefix,
+    directory:__dirname
 }
-
 //WEBSITE
 
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-
-app.get('/', function (req, res) {
-	res.send('Hello World!');
-});
      
 app.listen(4000, function () {
-	console.log('Example app listening on port 4000!');
-});
-function write(stream,data, cb) {
-	if (!stream.write(data)) {
-	  stream.once('drain', cb);
-	} else {
-	  process.nextTick(cb);
-	}
-}
-app.post("/obfuscate",function(req,res){
-	if(isObfuscating){
-		res.send("Please wait for a script to finish obfuscating!")
-	}else if(canObfuscate == true){
-		isObfuscating = true
-		var stream = fs.createWriteStream("AXR_in.lua");
-		stream.on("error",function(x){console.log(x)})
-		write(stream,req.body.toObfuscate, () => {
-			console.log("Done")
-                  child("java -jar "+__dirname+"\\ObfuscatorOUTPUT.jar", function(err, data) {
-				try{
-					child("lua mainHelpers\\minify.lua", {}, function(err, dataa) {
-						fs.readFile("C:\\Users\\2022c\\Desktop\\coding\\DiscordBotTesting\\EncryptionBotv2\\AXR_out.lua",function(err,data){
-							console.log(data)
-							res.send(data)
-							res.end()
-							isObfuscating = false
-						})
-					});
-				}catch(e){
-					console.log(e)
-					isObfuscating = false
-					res.end()
-				}
-			});
-			isObfuscating = false
-		});
 
-	}else if(canObfuscate==false){
-		res.send("Sorry! The obfuscator is currently disabled")
-		res.end()
-	}
-})
+	app.get('/', function (req, res) {
+		res.send('Hello World!');
+	});
+
+	app.get("/discord",function(req,res){
+		res.redirect("https://discord.gg/invite/3y7XbzR")
+	})
+
+});
