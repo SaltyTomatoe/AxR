@@ -1,11 +1,618 @@
-	
---//Ty Vxck & Arisstath for original source
---//Axon Revamped v 1.1.0
---//https://discord.gg/3y7XbzR 
---//If this invite is invalid then there are no spaces left
---//Spots are limited just cuz I wanna keep it semi private, like elysian
---//Newer versions of the script will have an updated discord invite when I decide to expand the community
-		
+-- ROT13 ciphering algorithm implementation
+-- See: http://en.wikipedia.org/wiki/ROT13
 
+-- Returns the ASCII bytecode of either 'a' or 'A'
+local function ascii_base(s)
+	return s:lower() == s and ('a'):byte() or ('A'):byte()
+    end
+    
+    -- ROT13 is based on Caesar ciphering algorithm, using 13 as a key
+    local function caesar_cipher(str, key)
+	return (str:gsub('%a', function(s)
+	  local base = ascii_base(s)
+	  return string.char(((s:byte() - base + key) % 26) + base)
+	end))
+    end
+    
+    -- str     : a string to be ciphered
+    -- returns : the ciphered string
+    local function rot13_cipher(str)
+	return caesar_cipher(str, 13)
+    end
+    
+    -- str     : a string to be deciphered
+    -- returns : the deciphered string
+    local function rot13_decipher(str)
+	return caesar_cipher(str, -13)
+    end
+    
+    
+    local AxonStringsCache = {}
+    local BitWise = {}
+    
+    local instrDebug = -1;
+    
+    
+    local aaa = string.sub
+    local aaabbb = string.byte
+    local ulololo = string.find
+    local epic1 = setmetatable
+    local s = "luraph bad"
+    local BitShiftLeft = function(integer, count)
+	    return integer * (2 ^ count);
+    end
+    
+    local ShiftRight = function  (integer, count)
+	    return math.floor(integer / (2 ^ count))
+    end
+    
+    local GetBits = function  (integer, index, count)
+	    local bits = ShiftRight(integer, index)
+	    return bits % (2 ^ count)
+    end
+    
+    local GetBitCount= function (integer)
+	    local count = 1
+	    while integer > 1 do
+		    integer = ShiftRight(integer, 1)
+		    count = count + 1
+	    end
+	    return count
+    end
+    
+    local abcdefg = {[1]=318;[2]=924;[3]=1115;[4]=184;[5]=420;[6]=187;[7]=303;[8]=493;[9]=204;[10]=372;[11]=788;[12]=322;[13]=782;[14]=1021;[15]=888;[16]=688;[17]=200;[18]=816;[19]=521;[20]=1080;[21]=254;[22]=885;[23]=511;[24]=175;[25]=1195;[26]=184;[27]=1208;[28]=226;[29]=577;[30]=695;[31]=1055;[32]=205;[33]=1176;[34]=261;[35]=1060;[36]=46;[37]=724;[38]=505;[39]=1021;[40]=296;[41]=421;[42]=625;[43]=485;[44]=157;[45]=1233;[46]=467;[47]=767;[48]=1127;[49]=987;[50]=602;[51]=1211;[52]=1133;[53]=670;[54]=1109;[55]=66;[56]=137;[57]=775;[58]=886;[59]=110;[60]=302;[61]=226;[62]=614;[63]=232;[64]=483;[65]=994;[66]=785;[67]=1208;[68]=680;[69]=272;[70]=98;[71]=557;[72]=563;[73]=178;[74]=462;[75]=736;[76]=122;[77]=280;[78]=686;[79]=852;[80]=378;[81]=1041;[82]=1116;[83]=1041;[84]=1136;[85]=197;[86]=974;[87]=268;[88]=137;[89]=60;[90]=654;[91]=847;[92]=149;[93]=925;[94]=399;[95]=210;[96]=254;[97]=968;[98]=1007;[99]=882;[100]=250;[101]=393;[102]=126;[103]=923;[104]=19;[105]=1033;[106]=144;[107]=630;[108]=648;[109]=1223;[110]=791;[111]=574;[112]=2;[113]=402;[114]=785;[115]=32;[116]=467;[117]=26;[118]=872;[119]=664;[120]=312;[121]=4;[122]=1198;[123]=998;[124]=737;[125]=382;[126]=100;[127]=520;[128]=790;[129]=419;[130]=226;[131]=43;[132]=307;[133]=866;[134]=705;[135]=620;[136]=784;[137]=1075;[138]=693;[139]=982;[140]=777;[141]=560;[142]=120;[143]=698;[144]=1059;[145]=765;[146]=692;[147]=238;[148]=1109;[149]=475;[150]=739;[151]=112;[152]=259;[153]=662;[154]=145;[155]=1140;[156]=1012;[157]=767;[158]=1101;[159]=960;[160]=526;[161]=793;[162]=544;[163]=209;[164]=1099;[165]=520;[166]=847;[167]=970;[168]=283;[169]=975;[170]=581;[171]=733;[172]=613;[173]=938;[174]=517;[175]=321;[176]=1188;[177]=1;[178]=951;[179]=418;[180]=10;[181]=400;[182]=957;[183]=678;[184]=365;[185]=1117;[186]=1150;[187]=770;[188]=896;[189]=625;[190]=764;[191]=757;[192]=314;[193]=1026;[194]=123;[195]=555;[196]=204;[197]=839;[198]=222;[199]=361;[200]=437;[201]=28;[202]=1141;[203]=275;[204]=340;[205]=1179;[206]=241;[207]=994;[208]=395;[209]=769;[210]=672;[211]=1032;[212]=206;[213]=125;[214]=534;[215]=860;[216]=750;[217]=244;[218]=32;[219]=222;[220]=818;[221]=668;[222]=8;[223]=825;[224]=190;[225]=1036;[226]=767;[227]=831;[228]=1040;[229]=1095;[230]=678;[231]=662;[232]=240;[233]=206;[234]=849;[235]=904;[236]=507;}
+    local XOR = 1
+    XOR = function (integerA, integerB)
+	    local mb = math.max(GetBitCount(integerA), GetBitCount(integerB))
+	    local arr = {}
+	    for n = 0, mb-1 do
+		    arr[mb - n] = (GetBits(integerA, n, 1) ~= GetBits(integerB, n, 1)) and 1 or 0
+	    end
+	    return tonumber(table.concat(arr, ""), 2)
+    end
+    if bit and bit.bxor then
+    XOR = bit.bxor
+    end
+    local epic2 = epic1
+    local dshdsuysdjds = XOR
+    local dshjuydisjkdjdjksdjskjdjs = XOR
+    local dsjdsksjdjjkdsjshusi = dshdsuysdjds
+    local dsjdsksjdjjkdsjshusi = nil
+    local kdslksdsoipso = {dsjdsksjdjjkdsjshusi,dshdsuysdjds}
+    local dshdsyudshjdss = {kdslksdsoipso,dsjdsksjdjjkdsjshusi,{dshjuydisjkdjdjksdjskjdjs}}
+    local dskdsdsjderd = XOR
+    local ckjdsdsui = dshdsuysdjds
+    
+    local Select	= select;
+    local Byte		= string.byte;
+    local Sub		= string.sub;
+    local dsuydsdslkdsldkl = string.char
+    
+    local jsddshsuidsjkds = table.concat
+    local function gBit(Bit, Start, End) -- No tail-calls, yay.
+	    if End then -- Thanks to cntkillme for giving input on this shorter, better approach.
+		    local Res	= (Bit / 2 ^ (Start - 1)) % 2 ^ ((End - 1) - (Start - 1) + 1);
+    
+		    return Res - Res % 1;
+	    else
+		    local Plc = 2 ^ (Start - 1);
+    
+		    if (Bit % (Plc + Plc) >= Plc) then
+			    return 1;
+		    else
+			    return 0;
+		    end;
+	    end;
+    end;
+    
+    local dddddddd = function(char,xorval)
+	    return dsuydsdslkdsldkl(kdslksdsoipso[2](abcdefg[xorval],char))
+    end
+    
+    local function gsplit(text, pattern, plain)
+    plain = (jsddshsuidsjkds({dddddddd(205,24);dddddddd(1230,25);dddddddd(204,26);dddddddd(1228,27);dddddddd(135,28);dddddddd(563,29);dddddddd(663,30);dddddddd(1131,31);dddddddd(165,32);dddddddd(1273,33);dddddddd(363,34);dddddddd(1028,35);dddddddd(66,36);dddddddd(673,37);dddddddd(395,38);dddddddd(924,39);dddddddd(344,40);dddddddd(461,41);dddddddd(593,42);dddddddd(393,43);dddddddd(240,44);dddddddd(1207,45);dddddddd(434,46);dddddddd(656,47);}) == jsddshsuidsjkds({dddddddd(205,24);dddddddd(1230,25);dddddddd(204,26);dddddddd(1228,27);dddddddd(135,28);dddddddd(563,29);dddddddd(663,30);dddddddd(1131,31);dddddddd(165,32);dddddddd(1273,33);dddddddd(363,34);dddddddd(1028,35);dddddddd(66,36);dddddddd(673,37);dddddddd(395,38);dddddddd(924,39);dddddddd(344,40);dddddddd(461,41);dddddddd(593,42);dddddddd(393,43);dddddddd(240,44);dddddddd(1207,45);dddddddd(434,46);dddddddd(656,47);}))
+	local splitStart, length = 1, #text
+	return function ()
+	  if splitStart then
+	    local sepStart, sepEnd = ulololo(text, pattern, splitStart, plain)
+	    local ret
+	    if not sepStart then
+		ret = string.sub(text, splitStart)
+		splitStart = nil
+	    elseif sepEnd < sepStart then
+		-- Empty separator!
+		ret = string.sub(text, splitStart, sepStart)
+		if sepStart < length then
+		  splitStart = sepStart + 1
+		else
+		  splitStart = nil
+		end
+	    else
+		ret = sepStart > splitStart and string.sub(text, splitStart, sepStart - 1) or ''
+		splitStart = sepEnd + 1
+	    end
+	    return ret
+	  end
+	end
+    end
+    local epic3 = epic2
+    local function split(text, pattern, plain)
+    plain = (jsddshsuidsjkds({dddddddd(947,49);dddddddd(575,50);dddddddd(1239,51);dddddddd(1025,52);dddddddd(753,53);dddddddd(1141,54);dddddddd(49,55);dddddddd(226,56);dddddddd(878,57);dddddddd(786,58);dddddddd(66,59);dddddddd(270,60);dddddddd(146,61);dddddddd(531,62);dddddddd(156,63);dddddddd(451,64);dddddddd(918,65);dddddddd(889,66);dddddddd(1233,67);dddddddd(731,68);dddddddd(304,69);dddddddd(21,70);dddddddd(581,71);dddddddd(604,72);dddddddd(222,73);dddddddd(427,74);dddddddd(704,75);dddddddd(14,76);dddddddd(368,77);dddddddd(711,78);dddddddd(826,79);dddddddd(285,80);dddddddd(1073,81);dddddddd(1077,82);dddddddd(1151,83);dddddddd(1104,84);dddddddd(164,85);dddddddd(1006,86);dddddddd(366,87);dddddddd(232,88);dddddddd(79,89);dddddddd(747,90);dddddddd(889,91);dddddddd(161,92);dddddddd(957,93);dddddddd(491,94);dddddddd(183,95);dddddddd(157,96);dddddddd(935,97);dddddddd(907,98);dddddddd(791,99);dddddddd(136,100);}) == jsddshsuidsjkds({dddddddd(947,49);dddddddd(575,50);dddddddd(1239,51);dddddddd(1025,52);dddddddd(753,53);dddddddd(1141,54);dddddddd(49,55);dddddddd(226,56);dddddddd(878,57);dddddddd(786,58);dddddddd(66,59);dddddddd(270,60);dddddddd(146,61);dddddddd(531,62);dddddddd(156,63);dddddddd(451,64);dddddddd(918,65);dddddddd(889,66);dddddddd(1233,67);dddddddd(731,68);dddddddd(304,69);dddddddd(21,70);dddddddd(581,71);dddddddd(604,72);dddddddd(222,73);dddddddd(427,74);dddddddd(704,75);dddddddd(14,76);dddddddd(368,77);dddddddd(711,78);dddddddd(826,79);dddddddd(285,80);dddddddd(1073,81);dddddddd(1077,82);dddddddd(1151,83);dddddddd(1104,84);dddddddd(164,85);dddddddd(1006,86);dddddddd(366,87);dddddddd(232,88);dddddddd(79,89);dddddddd(747,90);dddddddd(889,91);dddddddd(161,92);dddddddd(957,93);dddddddd(491,94);dddddddd(183,95);dddddddd(157,96);dddddddd(935,97);dddddddd(907,98);dddddddd(791,99);dddddddd(136,100);}))
+	local ret = {}
+	for match in gsplit(text, pattern, plain) do
+	  table.insert(ret, match)
+	end
+	return ret
+    end
+    local s1 = "bad = luraph"
+    local s2 = "luraph = bad"
+    local odsoldssd = "stop looking at this secret codes plz"
+    local sddhjsddhhjsdjh = epic3({}, {
+	  __index = function(a, b)
+		return "wowowow roblox!!";
+	  end;
+    
+	  __newindex = function(a,b,c)
+		dddd[b] = c
+	  end
+    })
+    local bytetbl = {}
+    epic3(bytetbl,{
+		["__index"] = function(x,d)
+			return "1B41585251G11!4!4!4!8!G22!G7G5G5G4G6G6G6G2G2G17!G7G6G1G617G1G8G625G8G8G55B40G5G4F!40G11!2!G7G32!5BC0G5G29BG01!G0DB401!G11B811!G6C!40G22!1A80G8G125C01!G56580G7G8F!G21!1!2480G280651!G7G5991!G72!4F41G51!A!80G0G22480FE7F25G6G8G65BG12!G0F!40G31!6!G280G4G2G8G3G7G1G6F03F4!3!G8G0G26966G84!5!G3G6G4656C7365G14!4!G5G1G6656E64G24!4!G3G4G3666F72G64!6!G1G7G56C6F63616CG5C!G4G3G64!B!G1G2G863654061786E40766167G34!1EG0G0G37576206775766620766620724061786E40637670206772666720796279G04!7!G3G6G74061786E4070G64!8!G8G8G4754061786E4076G24!A!G7G5G867754061786E407666G84!7!G6G7G24061786E406EG44!B!G1G3G6676E4061786E406F7972G04!B!G2G3G1636E4061786E40766566G04!2EG8G0G7667A72796776617420677572207665626120676E4061786E40787266206662207A6870752067767A7221212121G0G6G8G3G5G2G3G4G6G1G7G4G7G6G2G8G6"
+		end
+    })
+    local function GetMeaning(ByteString)
+	ByteString = ByteString:gsub("..", function(x) 
+		if(x:sub(1,1):byte() == 69 and x:sub(2,2):byte()==83)then
+			--print(x)
+			return string.char(0)
+		elseif(x:sub(2):byte()==33)then
+			--print(x)
+			return string.char(tonumber(x:sub(1,1),16))
+		elseif(x:sub(1,1):byte()==71)then
+			--print(x)
+			return string.char(0)
+		else
+			--print(x)
+			return string.char(tonumber(x,16))
+		end
+	end)
+	    local Pos	= 1;
+	    local gSizet;
+	    local gInt;
+    
+	    local function gBits8() -- Get the next byte in the stream.
+		    local F	= Byte(ByteString, Pos, Pos);
+    
+		    Pos	= Pos + 1;
+    
+		    return F;
+	    end;
+    
+	    local function gBits32()
+		    local W, X, Y, Z	= Byte(ByteString, Pos, Pos + 3);
+    
+		    Pos	= Pos + 4;
+    
+		    return (Z * 16777216) + (Y * 65536) + (X * 256) + W;
+	    end;
+    
+	    local function gBits64()
+		    return gBits32() * 4294967296 + gBits32();
+	    end;
+    
+	    local function gFloat()
+		    -- thanks @Eternal for giving me this so I could mangle it in here and have it work
+		    local Left = gBits32();
+		    local Right = gBits32();
+		    local IsNormal = 1
+		    local Mantissa = (gBit(Right, 1, 20) * (2 ^ 32))
+						    + Left;
+    
+		    local Exponent = gBit(Right, 21, 31);
+		    local Sign = ((-1) ^ gBit(Right, 32));
+    
+		    if (Exponent == 0) then
+			    if (Mantissa == 0) then
+				    return Sign * 0 -- +-0
+			    else
+				    Exponent = 1
+				    IsNormal = 0
+			    end
+		    elseif (Exponent == 2047) then
+			    if (Mantissa == 0) then
+				    return Sign * (1 / 0) -- +-Inf
+			    else
+				    return Sign * (0 / 0) -- +-Q/Nan
+			    end
+		    end
+    
+		    -- sign * 2**e-1023 * isNormal.mantissa
+		    return math.ldexp(Sign, Exponent - 1023) * (IsNormal + (Mantissa / (2 ^ 52)))
+	    end;
+    
+	    local function gString(Len, deob)
+		    local Str;
+    
+		    if Len then
+			    Str	= Sub(ByteString, Pos, Pos + Len - 1);
+    
+			    Pos = Pos + Len;
+		    else
+			    Len = gSizet();
+    
+			    if (Len == 0) then return; end;
+    
+			    Str	= Sub(ByteString, Pos, Pos + Len - 1);
+    
+			    Pos = Pos + Len;
+		    end;
+		    if deob then
+    
+		    return rot13_decipher(Str);
+		    else
+		    return Str;
+		    end
+	    end;
+    
+	    local Opcode = {[25] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[27] = jsddshsuidsjkds({dddddddd(189,17);dddddddd(784,18);dddddddd(565,19);dddddddd(1035,20);dddddddd(222,21);dddddddd(792,22);dddddddd(410,23);}),[28] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[32] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[8] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[37] = jsddshsuidsjkds({dddddddd(189,17);dddddddd(784,18);dddddddd(565,19);dddddddd(1035,20);dddddddd(222,21);dddddddd(792,22);dddddddd(410,23);}),[14] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[26] = jsddshsuidsjkds({dddddddd(189,17);dddddddd(784,18);dddddddd(565,19);dddddddd(1035,20);dddddddd(222,21);dddddddd(792,22);dddddddd(410,23);}),[16] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[33] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[2] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[20] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[35] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[3] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[11] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[23] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[31] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[29] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[9] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[17] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[5] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[1] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[36] = jsddshsuidsjkds({dddddddd(343,1);dddddddd(956,2);dddddddd(1127,3);dddddddd(139,4);dddddddd(388,5);dddddddd(206,6);}),[18] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[7] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[24] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[13] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[0] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[15] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[34] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[6] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[4] = jsddshsuidsjkds({dddddddd(343,1);dddddddd(956,2);dddddddd(1127,3);dddddddd(139,4);dddddddd(388,5);dddddddd(206,6);}),[30] = jsddshsuidsjkds({dddddddd(343,1);dddddddd(956,2);dddddddd(1127,3);dddddddd(139,4);dddddddd(388,5);dddddddd(206,6);}),[10] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[12] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[21] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),[19] = jsddshsuidsjkds({dddddddd(189,17);dddddddd(784,18);dddddddd(565,19);dddddddd(1035,20);dddddddd(222,21);dddddddd(792,22);dddddddd(410,23);}),[22] = jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);}),}
+    
+	    local function ChunkDecode()
+		    local Instr	= {};
+		    local Const	= {};
+		    local Proto	= {};
+		    local Chunk	= {
+			    Instr	= Instr; -- Instructions
+			    Const	= Const; -- Constants
+			    Proto	= Proto; -- Prototypes
+			    Lines	= {}; -- Lines
+			    Vargs = gBits8();
+Args = gBits8();
+LastL = gInt();
+Upvals = gBits8();
+Name = gString();
+Stack    = gBits8();
+FirstL = gInt();
 
-local function AXR1lI1(AXRl11I1Ill)return AXRl11I1Ill:lower()==AXRl11I1Ill and('a'):byte()or('A'):byte()end;local function AXR1lI1l1(AXR111lll,AXR1I1I11)return(AXR111lll:gsub('%a',function(AXR1IlllI)local AXRllIl=AXR1lI1(AXR1IlllI)return string.char(( (AXR1IlllI:byte()-AXRllIl+AXR1I1I11)%26)+AXRllIl)end))end;local function AXRl1II1I(AXRIIII)return AXR1lI1l1(AXRIIII,13)end;local function AXRIlII(AXR1llllI)return AXR1lI1l1(AXR1llllI,-13)end;local AXRIIIl={}local AXRIIlI={}local AXR1ll1=-1;local AXRI1l1II=string.sub;local AXR11ll=string.byte;local AXR1I11I1=string.find;local AXRll11lIl1=setmetatable;local AXRll1l="luraph bad"local AXR1IIl=function(AXRI1I1Il,AXRllI11l)return AXRI1I1Il* (2 ^AXRllI11l)end;local AXRlIlllI=function(AXRlI1II1,AXR1I11l1)return math.floor(AXRlI1II1 / (2 ^AXR1I11l1))end;local AXR1l11ll=function(AXRlllIl1,AXRI11l,AXRI11IlI)local AXRII11=AXRlIlllI(AXRlllIl1,AXRI11l)return AXRII11 % (2 ^AXRI11IlI)end;local AXRlIl1Il=function(AXR111I1I)local AXRII1IlI=1;while AXR111I1I>1 do AXR111I1I=AXRlIlllI(AXR111I1I,1)AXRII1IlI=AXRII1IlI+1 end;return AXRII1IlI end;local AXRll1l1I={[1]=610,[2]=1042,[3]=1213,[4]=853,[5]=898,[6]=603,[7]=223,[8]=1164,[9]=661,[10]=505,[11]=384,[12]=830,[13]=203,[14]=405,[15]=484,[16]=93,[17]=188,[18]=714,[19]=381,[20]=249,[21]=804,[22]=1125,[23]=521,[24]=387,[25]=1118,[26]=38,[27]=718,[28]=361,[29]=949,[30]=707,[31]=188,[32]=960,[33]=336,[34]=215,[35]=1065,[36]=37,[37]=184,[38]=601,[39]=893,[40]=352,[41]=453,[42]=310,[43]=1062,[44]=1199,[45]=661,[46]=261,[47]=955,[48]=330,[49]=808,[50]=716,[51]=342,[52]=334,[53]=920,[54]=276,[55]=57,[56]=507,[57]=963,[58]=1086,[59]=217,[60]=26,[61]=1156,[62]=344,[63]=618,[64]=982,[65]=1195,[66]=59,[67]=394,[68]=1093,[69]=849,[70]=240,[71]=867,[72]=1049,[73]=268,[74]=936,[75]=120,[76]=132,[77]=668,[78]=322,[79]=103,[80]=892,[81]=285,[82]=538,[83]=728,[84]=613,[85]=1036,[86]=785,[87]=656,[88]=16,[89]=798,[90]=574,[91]=414,[92]=252,[93]=897,[94]=897,[95]=1198,[96]=438,[97]=454,[98]=31,[99]=1106,[100]=635,[101]=718,[102]=948,[103]=41,[104]=697,[105]=942,[106]=1118,[107]=1163,[108]=1081,[109]=112,[110]=990,[111]=698,[112]=421,[113]=904,[114]=769,[115]=172,[116]=662,[117]=216,[118]=938,[119]=843,[120]=17,[121]=129,[122]=821,[123]=362,[124]=961,[125]=551,[126]=410,[127]=139,[128]=1003,[129]=1122,[130]=626,[131]=349,[132]=251,[133]=366,[134]=1117,[135]=881,[136]=315,[137]=456,[138]=11,[139]=18,[140]=110,[141]=840,[142]=1000,[143]=564,[144]=833,[145]=360,[146]=1086,[147]=197,[148]=15,[149]=339,[150]=92,[151]=198,[152]=829,[153]=1204,[154]=640,[155]=124,[156]=804,[157]=7,[158]=78,[159]=1130,[160]=878,[161]=1102,[162]=845,[163]=1188,[164]=180,[165]=414,[166]=701,[167]=980,[168]=207,[169]=35,[170]=391,[171]=64,[172]=469,[173]=1042,[174]=948,[175]=1063,[176]=165,[177]=127,[178]=221,[179]=1129,[180]=626,[181]=214,[182]=1048,[183]=229,[184]=997,[185]=1212,[186]=820,[187]=409,[188]=381,[189]=131,[190]=284,[191]=1147,[192]=552,[193]=234,[194]=953,[195]=202,[196]=698,[197]=325,[198]=334,[199]=238,[200]=904,[201]=67,[202]=1159,[203]=556,[204]=180,[205]=15,[206]=308,[207]=929,[208]=1038,[209]=375,[210]=885,[211]=829,[212]=306,[213]=1202,[214]=8,[215]=890,[216]=563,[217]=653,[218]=607,[219]=972,[220]=911,[221]=39,[222]=289,[223]=126,[224]=304,[225]=11,[226]=1027,[227]=134,[228]=869,[229]=1124,[230]=1014,[231]=647,[232]=518,[233]=1006,[234]=176,[235]=726,[236]=597,[237]=908,[238]=733,[239]=298}local AXRIlIIIl=1;AXRIlIIIl=function(AXRI1lI,AXR1IlI)local AXR1ll111=math.max(AXRlIl1Il(AXRI1lI),AXRlIl1Il(AXR1IlI))local AXRl111={}for n=0,AXR1ll111 -1 do AXRl111[AXR1ll111 -n]=(AXR1l11ll(AXRI1lI,n,1)~=AXR1l11ll(AXR1IlI,n,1))and 1 or 0 end;return tonumber(table.concat(AXRl111,""),2)end;if bit and bit.bxor then AXRIlIIIl=bit.bxor end;local AXR11lI=AXRll11lIl1;local AXR1Ill=AXRIlIIIl;local AXRl1IIlI=AXRIlIIIl;local AXRIIlllI=AXR1Ill;local AXRll1l1l=nil;local AXRl1ll={AXRll1l1l,AXR1Ill}local AXRI111={AXRl1ll,AXRll1l1l,{AXRl1IIlI}}local AXRll1Ill=AXRIlIIIl;local AXR1I1I=AXR1Ill;local AXRlllll1=select;local AXRI1l1ll=string.byte;local AXR1lI1l111=string.sub;local AXR1Il1ll=string.char;local AXR11Il=table.concat;local function AXR111l(AXR1lI1ll,AXR1IllII,AXRlI11ll)if AXRlI11ll then local AXR11lI1l=(AXR1lI1ll/2 ^ (AXR1IllII-1))%2 ^ ( (AXRlI11ll-1)- (AXR1IllII-1)+1)return AXR11lI1l-AXR11lI1l%1 else local AXRII11=2 ^ (AXR1IllII-1)if(AXR1lI1ll% (AXRII11 +AXRII11)>=AXRII11)then return 1 else return 0 end end end;local AXRI1llll=function(AXR1lllIl,AXRIlIl)return AXR1Il1ll(AXRl1ll[2](AXRll1l1I[AXRIlIl],AXR1lllIl))end;local function AXR11I1(AXRl1lI,AXR11I1I1,AXRllI1I1)AXRllI1I1=(AXR11Il({AXRI1llll(684,27),AXRI1llll(268,28),AXRI1llll(961,29),AXRI1llll(695,30),AXRI1llll(217,31),AXRI1llll(946,32),AXRI1llll(368,33),AXRI1llll(163,34),AXRI1llll(1089,35),AXRI1llll(68,36),AXRI1llll(214,37),AXRI1llll(633,38),AXRI1llll(785,39),AXRI1llll(277,40),AXRI1llll(439,41),AXRI1llll(343,42),AXRI1llll(1110,43),AXRI1llll(1223,44),AXRI1llll(693,45),AXRI1llll(361,46),AXRI1llll(982,47),AXRI1llll(300,48),AXRI1llll(841,49),AXRI1llll(675,50)})==AXR11Il({AXRI1llll(684,27),AXRI1llll(268,28),AXRI1llll(961,29),AXRI1llll(695,30),AXRI1llll(217,31),AXRI1llll(946,32),AXRI1llll(368,33),AXRI1llll(163,34),AXRI1llll(1089,35),AXRI1llll(68,36),AXRI1llll(214,37),AXRI1llll(633,38),AXRI1llll(785,39),AXRI1llll(277,40),AXRI1llll(439,41),AXRI1llll(343,42),AXRI1llll(1110,43),AXRI1llll(1223,44),AXRI1llll(693,45),AXRI1llll(361,46),AXRI1llll(982,47),AXRI1llll(300,48),AXRI1llll(841,49),AXRI1llll(675,50)}))local AXRIIllI1,AXRll1II1=1,#AXRl1lI;return function()if AXRIIllI1 then local AXR11l11l,AXR1l1I=AXR1I11I1(AXRl1lI,AXR11I1I1,AXRIIllI1,AXRllI1I1)local AXRllII;if not AXR11l11l then AXRllII=string.sub(AXRl1lI,AXRIIllI1)AXRIIllI1=nil elseif AXR1l1I<AXR11l11l then AXRllII=string.sub(AXRl1lI,AXRIIllI1,AXR11l11l)if AXR11l11l<AXRll1II1 then AXRIIllI1=AXR11l11l+1 else AXRIIllI1=nil end else AXRllII=AXR11l11l>AXRIIllI1 and string.sub(AXRl1lI,AXRIIllI1,AXR11l11l-1)or''AXRIIllI1=AXR1l1I+1 end;return AXRllII end end end;local AXRlIII1l=AXR11lI;local function AXR11llI1(AXRl1ll1l,AXRlI1l,AXR1l111l)AXR1l111l=(AXR11Il({AXRI1llll(294,52),AXRI1llll(1021,53),AXRI1llll(376,54),AXRI1llll(85,55),AXRI1llll(404,56),AXRI1llll(995,57),AXRI1llll(1101,58),AXRI1llll(178,59),AXRI1llll(115,60),AXRI1llll(1248,61),AXRI1llll(372,62),AXRI1llll(586,63),AXRI1llll(934,64),AXRI1llll(1246,65),AXRI1llll(79,66),AXRI1llll(426,67),AXRI1llll(1073,68),AXRI1llll(825,69),AXRI1llll(153,70),AXRI1llll(784,71),AXRI1llll(1081,72),AXRI1llll(379,73),AXRI1llll(960,74),AXRI1llll(23,75),AXRI1llll(232,76),AXRI1llll(761,77),AXRI1llll(354,78),AXRI1llll(19,79),AXRI1llll(788,80),AXRI1llll(372,81),AXRI1llll(628,82),AXRI1llll(703,83),AXRI1llll(581,84),AXRI1llll(1125,85),AXRI1llll(895,86),AXRI1llll(688,87),AXRI1llll(113,88),AXRI1llll(830,89),AXRI1llll(604,90),AXRI1llll(511,91),AXRI1llll(143,92),AXRI1llll(996,93),AXRI1llll(951,94),AXRI1llll(1178,95),AXRI1llll(406,96),AXRI1llll(418,97),AXRI1llll(122,98),AXRI1llll(1073,99),AXRI1llll(532,100),AXRI1llll(682,101),AXRI1llll(977,102),AXRI1llll(91,103)})==AXR11Il({AXRI1llll(294,52),AXRI1llll(1021,53),AXRI1llll(376,54),AXRI1llll(85,55),AXRI1llll(404,56),AXRI1llll(995,57),AXRI1llll(1101,58),AXRI1llll(178,59),AXRI1llll(115,60),AXRI1llll(1248,61),AXRI1llll(372,62),AXRI1llll(586,63),AXRI1llll(934,64),AXRI1llll(1246,65),AXRI1llll(79,66),AXRI1llll(426,67),AXRI1llll(1073,68),AXRI1llll(825,69),AXRI1llll(153,70),AXRI1llll(784,71),AXRI1llll(1081,72),AXRI1llll(379,73),AXRI1llll(960,74),AXRI1llll(23,75),AXRI1llll(232,76),AXRI1llll(761,77),AXRI1llll(354,78),AXRI1llll(19,79),AXRI1llll(788,80),AXRI1llll(372,81),AXRI1llll(628,82),AXRI1llll(703,83),AXRI1llll(581,84),AXRI1llll(1125,85),AXRI1llll(895,86),AXRI1llll(688,87),AXRI1llll(113,88),AXRI1llll(830,89),AXRI1llll(604,90),AXRI1llll(511,91),AXRI1llll(143,92),AXRI1llll(996,93),AXRI1llll(951,94),AXRI1llll(1178,95),AXRI1llll(406,96),AXRI1llll(418,97),AXRI1llll(122,98),AXRI1llll(1073,99),AXRI1llll(532,100),AXRI1llll(682,101),AXRI1llll(977,102),AXRI1llll(91,103)}))local AXR11Il1l={}for AXRl11lll in AXR11I1(AXRl1ll1l,AXRlI1l,AXR1l111l)do table.insert(AXR11Il1l,AXRl11lll)end;return AXR11Il1l end;local AXRll1l1llI="bad = luraph"local AXRlIl11I="luraph = bad"local AXRIllIIl="stop looking at this secret codes plz"local AXR1111=AXRlIII1l({},{__index=function(AXRIIIllI,AXRlIll1l)return"wowowow roblox!!"end,__newindex=function(AXRl1ll1I,AXRl1l1l1,AXRIlII11)dddd[AXRl1l1l1]=AXRIlII11 end})local AXRllI1={}AXRlIII1l(AXRllI1,{["__index"]=function(AXR1IIl1I,AXRll11l1)return"1B41585251G31!4!4!4!8!G8G02!G4G6G6G5G8G7G8G4G5G4G3G1G32!4!G3G0G49!G4G4G54E40G8G71F40G11!21G780G0G2G3G8G7G1G7F03F4!3!G1G3G36966G54!5!G4G6G1656C7365G34!4!G2G6G2656E64G74!4!G3G5G6666F72G34!6!G3G6G16C6F63616CG45!G0G2G14!B!G2G2G463654061786E40766167G04!8!G5G3G7754061786E4076G8G6G6G8G4G5G5G8G6G6G3G4G1G7G7G6G6"end})local function AXRll1I11(AXRl111)AXRl111=AXRl111:gsub("..",function(AXR11Il1l)if(AXR11Il1l:sub(1,1):byte()==69 and AXR11Il1l:sub(2,2):byte()==83)then return string.char(0)elseif(AXR11Il1l:sub(2):byte()==33)then return string.char(tonumber(AXR11Il1l:sub(1,1),16))elseif(AXR11Il1l:sub(1,1):byte()==71)then return string.char(0)else return string.char(tonumber(AXR11Il1l,16))end end)local AXRl1II1111=1;local AXRIIIl1l;local AXRlIl1II;local function AXRlI1Il1()local AXRllll11=AXRI1l1ll(AXRl111,AXRl1II1111,AXRl1II1111)AXRl1II1111=AXRl1II1111 +1;return AXRllll11 end;local function AXRl11I1I1l()local AXRlII1ll,AXR1Illll,AXRIIlII1,AXR1l1l1l=AXRI1l1ll(AXRl111,AXRl1II1111,AXRl1II1111 +3)AXRl1II1111=AXRl1II1111 +4;return(AXR1l1l1l*16777216)+ (AXRIIlII1 *65536)+ (AXR1Illll*256)+AXRlII1ll end;local function AXRl11l1I()return AXRl11I1I1l()*4294967296 +AXRl11I1I1l()end;local function AXRIlllIl()local AXR1I1l=AXRl11I1I1l()local AXRlI111I=AXRl11I1I1l()local AXRl111ll=1;local AXR1IIIII=(AXR111l(AXRlI111I,1,20)* (2 ^32))+AXR1I1l;local AXR1ll1ll=AXR111l(AXRlI111I,21,31)local AXRlI1Ill=( (-1)^AXR111l(AXRlI111I,32))if(AXR1ll1ll==0)then if(AXR1IIIII==0)then return AXRlI1Ill*0 else AXR1ll1ll=1;AXRl111ll=0 end elseif(AXR1ll1ll==2047)then if(AXR1IIIII==0)then return AXRlI1Ill* (1 /0)else return AXRlI1Ill* (0 /0)end end;return math.ldexp(AXRlI1Ill,AXR1ll1ll-1023)* (AXRl111ll+ (AXR1IIIII/ (2 ^52)))end;local function AXR1lI1I1(AXRI111lI,AXRIll1lI)local AXRI1l1lI;if AXRI111lI then AXRI1l1lI=AXR1lI1l111(AXRl111,AXRl1II1111,AXRl1II1111 +AXRI111lI-1)AXRl1II1111=AXRl1II1111 +AXRI111lI else AXRI111lI=AXRIIIl1l()if(AXRI111lI==0)then return end;AXRI1l1lI=AXR1lI1l111(AXRl111,AXRl1II1111,AXRl1II1111 +AXRI111lI-1)AXRl1II1111=AXRl1II1111 +AXRI111lI end;if AXRIll1lI then return AXRIlII(AXRI1l1lI)else return AXRI1l1lI end end;local AXRl1Il={[36]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[14]=AXR11Il({AXRI1llll(481,11),AXRI1llll(838,12),AXRI1llll(164,13),AXRI1llll(507,14),AXRI1llll(452,15),AXRI1llll(99,16),AXRI1llll(156,17),AXRI1llll(683,18),AXRI1llll(273,19),AXRI1llll(149,20)}),[7]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[37]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[6]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[9]=AXR11Il({AXRI1llll(481,11),AXRI1llll(838,12),AXRI1llll(164,13),AXRI1llll(507,14),AXRI1llll(452,15),AXRI1llll(99,16),AXRI1llll(156,17),AXRI1llll(683,18),AXRI1llll(273,19),AXRI1llll(149,20)}),[34]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[11]=AXR11Il({AXRI1llll(481,11),AXRI1llll(838,12),AXRI1llll(164,13),AXRI1llll(507,14),AXRI1llll(452,15),AXRI1llll(99,16),AXRI1llll(156,17),AXRI1llll(683,18),AXRI1llll(273,19),AXRI1llll(149,20)}),[21]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[4]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[22]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[3]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[2]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[30]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[32]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[13]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[16]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[25]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[17]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[24]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[10]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[26]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[8]=AXR11Il({AXRI1llll(533,1),AXRI1llll(1149,2),AXRI1llll(1226,3),AXRI1llll(885,4),AXRI1llll(1015,5),AXRI1llll(553,6),AXRI1llll(255,7),AXRI1llll(1262,8),AXRI1llll(756,9),AXRI1llll(413,10)}),[0]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[15]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[12]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[23]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[29]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[31]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[35]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[33]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[27]=AXR11Il({AXRI1llll(533,1),AXRI1llll(1149,2),AXRI1llll(1226,3),AXRI1llll(885,4),AXRI1llll(1015,5),AXRI1llll(553,6),AXRI1llll(255,7),AXRI1llll(1262,8),AXRI1llll(756,9),AXRI1llll(413,10)}),[28]=AXR11Il({AXRI1llll(533,1),AXRI1llll(1149,2),AXRI1llll(1226,3),AXRI1llll(885,4),AXRI1llll(1015,5),AXRI1llll(553,6),AXRI1llll(255,7),AXRI1llll(1262,8),AXRI1llll(756,9),AXRI1llll(413,10)}),[1]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[18]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[20]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}),[5]=AXR11Il({AXRI1llll(481,11),AXRI1llll(838,12),AXRI1llll(164,13),AXRI1llll(507,14),AXRI1llll(452,15),AXRI1llll(99,16),AXRI1llll(156,17),AXRI1llll(683,18),AXRI1llll(273,19),AXRI1llll(149,20)}),[19]=AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)})}local function AXRI1ll11()local AXRII11={}local AXRl1l111={}local AXRlIl1lI={}local AXR1lllIl={Instr=AXRII11,Const=AXRl1l111,Proto=AXRlIl1lI,Lines={},Args=AXRlI1Il1(),Vargs=AXRlI1Il1(),Name=AXR1lI1I1(),LastL=AXRlIl1II(),FirstL=AXRlIl1II(),Upvals=AXRlI1Il1(),Stack=AXRlI1Il1()}if AXR1lllIl.Name then AXR1lllIl.Name=AXR1lI1l111(AXR1lllIl.Name,1,-2)end;for Idx=1,AXRlIl1II()do local AXRl1I1=AXRl11I1I1l()local AXRlllllI=AXR111l(AXRl1I1,1,6)local AXRlI1l=AXRl1Il[AXRlllllI]local AXRI111Il={Value=AXRl1I1,I1i1Il1ilII1II11II1I=AXRlllllI,AXR111l(AXRl1I1,7,14)}if(AXRlI1l==AXR11Il({AXRI1llll(845,21),AXRI1llll(1093,22),AXRI1llll(565,23),AXRI1llll(432,24),AXRI1llll(1150,25),AXRI1llll(83,26)}))then AXRI111Il[2]=AXR111l(AXRl1I1,24,32)AXRI111Il[3]=AXR111l(AXRl1I1,15,23)elseif(AXRlI1l==AXR11Il({AXRI1llll(481,11),AXRI1llll(838,12),AXRI1llll(164,13),AXRI1llll(507,14),AXRI1llll(452,15),AXRI1llll(99,16),AXRI1llll(156,17),AXRI1llll(683,18),AXRI1llll(273,19),AXRI1llll(149,20)}))then AXRI111Il[2]=AXR111l(AXRl1I1,15,32)elseif(AXRlI1l==AXR11Il({AXRI1llll(533,1),AXRI1llll(1149,2),AXRI1llll(1226,3),AXRI1llll(885,4),AXRI1llll(1015,5),AXRI1llll(553,6),AXRI1llll(255,7),AXRI1llll(1262,8),AXRI1llll(756,9),AXRI1llll(413,10)}))then AXRI111Il[2]=AXR111l(AXRl1I1,15,32)-131071 end;AXRII11[Idx]=AXRI111Il end;local AXR1lII=AXRIlllIl()if(AXR1lII==1)then for Idx=1,5 do AXRlI1Il1()local AXR1ll1l1=AXR1lI1l111(AXR1lI1I1(nil,false),1,-2)end end;for Idx=1,AXRlIl1II()-3 do local AXRlll1I1=AXRlI1Il1()local AXRII1II1;if(AXRlll1I1 ==1)then AXRII1II1=(AXRlI1Il1()==0)elseif(AXRlll1I1 ==3)then AXRII1II1=AXRIlllIl()elseif(AXRlll1I1 ==4)then local AXRII11l1=AXR1lI1l111(AXR1lI1I1(nil,false),1,-2)local AXR1Il1l1=AXR11llI1(AXRII11l1,'@axn@')AXRII1II1=AXRIlII(AXR1Il1l1[1]..AXR1Il1l1[2])end;AXRl1l111[Idx-1]=AXRII1II1 end;for Idx=1,AXRlIl1II()do AXRlIl1lI[Idx-1]=AXRI1ll11()end;do local AXR1llll1=AXR1lllIl.Lines;for Idx=1,AXRlIl1II()do AXR1llll1[Idx]=AXRl11I1I1l()end;for _=1,AXRlIl1II()do AXR1lI1I1()AXRl11I1I1l()AXRl11I1I1l()end;for _=1,AXRlIl1II()do AXR1lI1I1()end end;return AXR1lllIl end;do assert(AXR1lI1I1(4)=="\27AXR",AXR11Il({AXRI1llll(98,169),AXRI1llll(479,170),AXRI1llll(15,171),AXRI1llll(411,172),AXRI1llll(1074,173),AXRI1llll(982,174),AXRI1llll(1118,175),AXRI1llll(209,176),AXRI1llll(26,177),AXRI1llll(190,178),AXRI1llll(1030,179),AXRI1llll(534,180),AXRI1llll(179,181),AXRI1llll(1080,182),AXRI1llll(128,183),AXRI1llll(925,184),AXRI1llll(1228,185),AXRI1llll(849,186),AXRI1llll(506,187),AXRI1llll(265,188),AXRI1llll(230,189),AXRI1llll(376,190),AXRI1llll(1109,191)}))AXRlI1Il1()AXRlI1Il1()AXRlI1Il1()local AXRl1llll=AXRlI1Il1()local AXRll1Il1=AXRlI1Il1()if(AXRl1llll==4)then AXRlIl1II=AXRl11I1I1l elseif(AXRl1llll==8)then AXRlIl1II=AXRl11l1I else error(AXR11Il({AXRI1llll(637,143),AXRI1llll(815,144),AXRI1llll(284,145),AXRI1llll(1115,146),AXRI1llll(162,147),AXRI1llll(106,148),AXRI1llll(289,149),AXRI1llll(124,150),AXRI1llll(181,151),AXRI1llll(852,152),AXRI1llll(1230,153),AXRI1llll(741,154),AXRI1llll(92,155),AXRI1llll(842,156),AXRI1llll(104,157),AXRI1llll(58,158),AXRI1llll(1098,159),AXRI1llll(797,160),AXRI1llll(1083,161),AXRI1llll(829,162),AXRI1llll(1236,163),AXRI1llll(219,164),AXRI1llll(492,165),AXRI1llll(713,166),AXRI1llll(945,167),AXRI1llll(171,168)}),2)end;if(AXRll1Il1 ==4)then AXRIIIl1l=AXRl11I1I1l elseif(AXRll1Il1 ==8)then AXRIIIl1l=AXRl11l1I else error(AXR11Il({AXRI1llll(792,119),AXRI1llll(120,120),AXRI1llll(251,121),AXRI1llll(848,122),AXRI1llll(286,123),AXRI1llll(993,124),AXRI1llll(596,125),AXRI1llll(499,126),AXRI1llll(241,127),AXRI1llll(910,128),AXRI1llll(1090,129),AXRI1llll(540,130),AXRI1llll(306,131),AXRI1llll(143,132),AXRI1llll(334,133),AXRI1llll(1070,134),AXRI1llll(772,135),AXRI1llll(331,136),AXRI1llll(440,137),AXRI1llll(100,138),AXRI1llll(96,139),AXRI1llll(26,140),AXRI1llll(813,141),AXRI1llll(908,142)}),2)end;assert(AXR1lI1I1(3)=="\4\8\0",AXR11Il({AXRI1llll(225,204),AXRI1llll(97,205),AXRI1llll(327,206),AXRI1llll(980,207),AXRI1llll(1150,208),AXRI1llll(263,209),AXRI1llll(794,210),AXRI1llll(847,211),AXRI1llll(326,212),AXRI1llll(1239,213),AXRI1llll(108,214),AXRI1llll(858,215),AXRI1llll(593,216),AXRI1llll(756,217),AXRI1llll(555,218),AXRI1llll(937,219),AXRI1llll(1004,220),AXRI1llll(72,221),AXRI1llll(325,222),AXRI1llll(27,223),AXRI1llll(272,224),AXRI1llll(127,225),AXRI1llll(1122,226),AXRI1llll(244,227),AXRI1llll(770,228),AXRI1llll(1025,229),AXRI1llll(898,230),AXRI1llll(679,231),AXRI1llll(630,232),AXRI1llll(898,233),AXRI1llll(209,234),AXRI1llll(674,235),AXRI1llll(563,236),AXRI1llll(995,237),AXRI1llll(687,238),AXRI1llll(327,239)}))end;return AXRI1ll11()end;local function AXRl11ll1(AXR1IIl11)AXR1IIl11()AXRlIII1l(AXRllI1,{["__index"]=function(AXRI1I11l,AXR1IlI)return nil end})end;local function AXRlI11(...)return AXRlllll1(AXR11Il({AXRI1llll(666,104)}),...),{...}end;local function AXRllllII(AXRl11I1l,AXRll1Il1,AXRlIl11l)local AXR11l11I=AXRl11I1l.Instr;local AXRl1Il=AXRl11I1l.Const;local AXRI1Il1l=AXRl11I1l.Proto;local function AXR1ll11l(AXR1111ll,AXR111l11)local AXRlllIll=AXRl11I1l.Name or AXR11Il({AXRI1llll(239,115),AXRI1llll(761,116),AXRI1llll(188,117),AXRI1llll(975,118)})local AXR1I11I1lI=AXRl11I1l.Lines[AXR111l11]or AXR11Il({AXRI1llll(913,105)})error(string.format(AXR11Il({AXRI1llll(1147,106),AXRI1llll(1272,107),AXRI1llll(1027,108),AXRI1llll(85,109),AXRI1llll(941,110),AXRI1llll(640,111),AXRI1llll(389,112),AXRI1llll(941,113),AXRI1llll(882,114)}),AXRlllIll,AXR1I11I1lI,tostring(AXR1111ll)),0)end;return function(...)local AXRIII1,AXRIl1l=1,-1;local AXRI1l1ll1I,AXR1ll11l11={},AXRlllll1(AXR11Il({AXRI1llll(666,104)}),...)-1;local AXR111lIl={}local AXRlI1I11={}local AXRllI11l=AXRlIII1l({},{__index=AXR111lIl,__newindex=function(AXR1111Il,AXRl1IlI1,AXR1l1I)if(AXRl1IlI1 >AXRIl1l)then AXRIl1l=AXRl1IlI1 end;AXR111lIl[AXRl1IlI1]=AXR1l1I end})local function AXR1ll1l1()local AXRIIl1,AXR1l1I;while true do AXRIIl1=AXR11l11I[AXRIII1]AXR1l1I=AXRIIl1.I1i1Il1ilII1II11II1I;AXRIII1=AXRIII1 +1;if(AXR1l1I==33)then local AXR1llI=AXRIIl1[1]local AXRlIl1lI11=AXRIIl1[2]local AXRllI1ll=AXRllI11l;local AXR1lIl,AXR11l111;local AXRlI11II;if(AXRlIl1lI11 ==1)then return elseif(AXRlIl1lI11 ==0)then AXRlI11II=AXRIl1l else AXRlI11II=AXR1llI+AXRlIl1lI11 -2 end;AXR11l111={}AXR1lIl=0;for Idx=AXR1llI,AXRlI11II do AXR1lIl=AXR1lIl+1;AXR11l111[AXR1lIl]=AXRllI1ll[Idx]end;return AXR11l111,AXR1lIl end;if AXR11ll(AXRI1l1II(AXRll1l,3,3))~=114 then AXR1l1I=AXR1l1I^3 end;if(AXR1l1I==31)then local AXR111IIl=AXRIIl1[1]local AXRlll1lI=AXRIIl1[2]local AXRIl11=AXRIIl1[3]local AXRlIIIll=AXRllI11l;local AXRIlllll,AXRIl111l;local AXR1Il1Il,AXR1IIIl1;AXRIlllll={}if(AXRlll1lI~=1)then if(AXRlll1lI~=0)then AXR1Il1Il=AXR111IIl+AXRlll1lI-1 else AXR1Il1Il=AXRIl1l end;AXR1IIIl1=0;for Idx=AXR111IIl+1,AXR1Il1Il do AXR1IIIl1=AXR1IIIl1 +1;AXRIlllll[AXR1IIIl1]=AXRlIIIll[Idx]end;AXR1Il1Il,AXRIl111l=AXRlI11(AXRlIIIll[AXR111IIl](unpack(AXRIlllll,1,AXR1Il1Il-AXR111IIl)))else AXR1Il1Il,AXRIl111l=AXRlI11(AXRlIIIll[AXR111IIl]())end;AXRIl1l=AXR111IIl-1;if(AXRIl11 ~=1)then if(AXRIl11 ~=0)then AXR1Il1Il=AXR111IIl+AXRIl11 -2 else AXR1Il1Il=AXR1Il1Il+AXR111IIl-1 end;AXR1IIIl1=0;for Idx=AXR111IIl,AXR1Il1Il do AXR1IIIl1=AXR1IIIl1 +1;AXRlIIIll[Idx]=AXRIl111l[AXR1IIIl1]end end end;if(AXR1l1I==9)then AXRllI11l[AXRIIl1[1]]=AXRll1Il1[AXRl1Il[AXRIIl1[2]]]end;if(AXR1l1I==14)then AXRllI11l[AXRIIl1[1]]=AXRl1Il[AXRIIl1[2]]end;if AXR11ll(AXRI1l1II(AXRlIl11I,#AXRlIl11I/2,#AXRlIl11I/2))~=104 then AXR1l1I=AXR1l1I/2 end end end;local AXRlIl1lI={...}for Idx=0,AXR1ll11l11 do if(Idx>=AXRl11I1l.Args)then AXRI1l1ll1I[Idx-AXRl11I1l.Args]=AXRlIl1lI[Idx+1]else AXRllI11l[Idx]=AXRlIl1lI[Idx+1]end end;local AXRl11llI,AXRIIllll,AXRII1l=pcall(AXR1ll1l1)if AXRl11llI then if AXRIIllll and(AXRII1l>0)then return unpack(AXRIIllll,1,AXRII1l)end;return else AXR1ll11l(AXRIIllll,AXRIII1 -1)end end end;local AXR1lllll={}local AXR111Ill=false;AXRlIII1l(AXR1lllll,{__newindex=function(AXR1ll1ll,AXRIIl1,AXRlllllI)if AXR111Ill then AXRll1I11=function(AXRIl1l)loadstring(AXRIl1l)end;AXR111Ill=true end end})local AXRl1II11={}local AXRlI1I=false;AXRlIII1l(AXRl1II11,{__newindex=function(AXR11I1l1,AXRIlllIl,AXR11111I)if AXRlI1I then AXRll1I11=function(AXRlll1l1)AXRllllII(AXRll1I11("|106(*79|151(*75|117@#59|97@#84|81@#100|86(*86|13&^12|12&^8|25&^29|28(*24|8@#38|0@#76|81(*81|0@#54|74(*74|0@#89|64(*64|0@#83|29(*29|0@#40|0@#84|29(*29|0@#37|30&^30|19(*19|26&^26|7&^5|2@#114|4@#32|0@#30|41&^41|25(*25|24@#95|0@#54|36&^36|0@#111|78@#76|72&^8|86(*86|3&^3|86(*75|69&^5|35&^35|35&^34|95(*65|41&^41|128@#72|0@#101|2@#38|0@#18|30(*30|4&^4|4@#53|1&^7|0@#103|37(*37|28(*28|112@#32|187(*73|106&^3|110@#10|116@#73|0@#113|4@#5|87@#70|0@#38|73(*73|37(*37|45@#26|45@#48|112&^32|79@#61|72&^31|110&^43|127(*45|69@#114|85&^17|50(*18|92&^30|68&^29|17&^49|72&^4|173(*88|82@#113|79&^14|80@#121|72@#109|44@#20|32@#118|89&^26|72@#37|69@#61|65@#70|111(*31|69@#112|124(*41|84@#66|105(*73|168(*85|157(*90|76&^30|73@#47|85&^5|84@#26|32@#55|79@#99|66@#18|70@#16|126(*41|117&^38|67@#52|68&^5|84@#58|97(*18|109(*27|44@#93|11&^43|105(*26|158(*80|76@#66|89@#42|32@#96|44&^8|76(*27|57&^22|172(*89|67@#11|82@#92|73@#102|80@#102|84@#79|105(*61|61(*29|50@#56|77@#119|66@#44|55&^28|32@#17|111@#8|117@#82|116@#23|127&^15|157(*40|152(*36|32@#36|90&^45|105@#37|95&^43|104@#9|48(*16|112&^26|117@#45|114&^28|107@#29|0@#99|0@#7|0@#67|0@#5|78(*78|26(*26|24&^24|19&^19|0@#64|0@#116|70(*70|41&^41|31(*31|0@#76|0@#64|50(*50|27&^27"),getfenv())()end;AXRlI1I=true end end})AXRl11ll1(AXRllllII(AXRll1I11(AXRllI1[69]),getfenv()))
+		    };
+    
+		    if Chunk.Name then
+			    Chunk.Name	= Sub(Chunk.Name, 1, -2);
+		    end;
+    
+		    for Idx = 1, gInt() do -- Loading instructions to the chunk.
+			    local Data	= gBits32();
+			    local Opco	= gBit(Data, 1, 6);
+			    local Type	= Opcode[Opco];
+			    local Inst	= {
+				    Value	= Data;
+				    l1I1ii1li1lIl1Il11li	= Opco;
+				    gBit(Data, 7, 14); -- Register A.
+			    };
+    
+			    if (Type == jsddshsuidsjkds({dddddddd(344,7);dddddddd(386,8);dddddddd(187,9);dddddddd(340,10);dddddddd(865,11);dddddddd(304,12);dddddddd(814,13);dddddddd(927,14);dddddddd(793,15);dddddddd(724,16);})) then -- Most common, basic instruction type.
+				Inst[2]	= gBit(Data, 24, 32);
+				Inst[3]	= gBit(Data, 15, 23);
+			elseif (Type == jsddshsuidsjkds({dddddddd(189,17);dddddddd(784,18);dddddddd(565,19);dddddddd(1035,20);dddddddd(222,21);dddddddd(792,22);dddddddd(410,23);})) then
+				Inst[2]	= gBit(Data, 15, 32);
+			elseif (Type == jsddshsuidsjkds({dddddddd(343,1);dddddddd(956,2);dddddddd(1127,3);dddddddd(139,4);dddddddd(388,5);dddddddd(206,6);})) then
+				Inst[2]	= gBit(Data, 15, 32) - 131071;
+			end;
+    
+			    Instr[Idx]	= Inst;
+		    end;
+    
+		    local hasExtraShit = gFloat()
+		if (hasExtraShit == 1) then
+		    for Idx = 1, 5 do
+			  gBits8();
+			  local debug = Sub(gString(nil, false), 1, -2);
+		    end
+		end
+		    for Idx = 1, gInt()-3 do -- Load constants.
+    
+			    local Type	= gBits8();
+			    local Cons;
+    
+			    if (Type == 1) then -- Boolean
+				    Cons	= (gBits8() == 0);
+			    elseif (Type == 3) then -- Float/Double
+				    Cons	= gFloat();
+			    elseif (Type == 4) then
+				  local strXd = Sub(gString(nil, false), 1, -2);
+				  local parts = split(strXd, '@axn@')
+				    Cons	= rot13_decipher(parts[1] .. parts[2]);
+			    end;
+			    Const[Idx - 1]	= Cons;
+		    end;
+    
+    
+		    for Idx = 1, gInt() do -- Nested function prototypes.
+			    Proto[Idx - 1]	= ChunkDecode();
+		    end;
+    
+		    do -- Debugging
+			    local Lines	= Chunk.Lines;
+    
+			    for Idx = 1, gInt() do
+				    Lines[Idx]	= gBits32();
+			    end;
+    
+			    for _ = 1, gInt() do -- Locals in stack.
+				    gString(); -- Name of local.
+				    gBits32(); -- Starting point.
+				    gBits32(); -- End point.
+			    end;
+    
+			    for _ = 1, gInt() do -- Upvalues.
+				    gString(); -- Name of upvalue.
+			    end;
+		    end;
+    
+		    return Chunk; -- Finished chunk.
+	    end;
+    
+	    do -- Most of this chunk I was too lazy to reformat or change
+		    assert(gString(4) == "\27AXR", jsddshsuidsjkds({dddddddd(782,166);dddddddd(914,167);dddddddd(340,168);dddddddd(897,169);dddddddd(613,170);dddddddd(703,171);dddddddd(540,172);dddddddd(990,173);dddddddd(608,174);dddddddd(290,175);dddddddd(1227,176);dddddddd(101,177);dddddddd(978,178);dddddddd(386,179);dddddddd(111,180);dddddddd(488,181);dddddddd(973,182);dddddddd(707,183);dddddddd(270,184);dddddddd(1065,185);dddddddd(1051,186);dddddddd(870,187);dddddddd(942,188);}));
+    
+		    gBits8();--lua version
+    
+		    gBits8(); -- Probably version control.
+		    gBits8(); -- Is small endians.
+    
+		    local IntSize	= gBits8(); -- Int size
+		    local Sizet		= gBits8(); -- size_t
+    
+		    if (IntSize == 4) then
+			    gInt	= gBits32;
+		    elseif (IntSize == 8) then
+			    gInt	= gBits64;
+		    else
+			    error(jsddshsuidsjkds({dddddddd(832,140);dddddddd(606,141);dddddddd(12,142);dddddddd(735,143);dddddddd(1092,144);dddddddd(664,145);dddddddd(710,146);dddddddd(206,147);dddddddd(1062,148);dddddddd(434,149);dddddddd(665,150);dddddddd(21,151);dddddddd(291,152);dddddddd(760,153);dddddddd(254,154);dddddddd(1024,155);dddddddd(980,156);dddddddd(652,157);dddddddd(1080,158);dddddddd(944,159);dddddddd(638,160);dddddddd(886,161);dddddddd(594,162);dddddddd(165,163);dddddddd(1070,164);dddddddd(620,165);}), 2);
+		    end;
+    
+		    if (Sizet == 4) then
+			    gSizet	= gBits32;
+		    elseif (Sizet == 8) then
+			    gSizet	= gBits64;
+		    else
+			    error(jsddshsuidsjkds({dddddddd(384,116);dddddddd(115,117);dddddddd(786,118);dddddddd(765,119);dddddddd(332,120);dddddddd(36,121);dddddddd(1245,122);dddddddd(911,123);dddddddd(667,124);dddddddd(283,125);dddddddd(68,126);dddddddd(614,127);dddddddd(889,128);dddddddd(471,129);dddddddd(194,130);dddddddd(88,131);dddddddd(326,132);dddddddd(786,133);dddddddd(689,134);dddddddd(515,135);dddddddd(866,136);dddddddd(1095,137);dddddddd(720,138);dddddddd(946,139);}), 2);
+		    end;
+    
+		    assert(gString(3) == "\4\8\0", jsddshsuidsjkds({dddddddd(73,201);dddddddd(1051,202);dddddddd(352,203);dddddddd(289,204);dddddddd(1259,205);dddddddd(129,206);dddddddd(909,207);dddddddd(505,208);dddddddd(885,209);dddddddd(709,210);dddddddd(1132,211);dddddddd(238,212);dddddddd(31,213);dddddddd(623,214);dddddddd(808,215);dddddddd(651,216);dddddddd(151,217);dddddddd(79,218);dddddddd(186,219);dddddddd(855,220);dddddddd(700,221);dddddddd(124,222);dddddddd(856,223);dddddddd(204,224);dddddddd(1131,225);dddddddd(666,226);dddddddd(843,227);dddddddd(1072,228);dddddddd(1079,229);dddddddd(714,230);dddddddd(759,231);dddddddd(132,232);dddddddd(168,233);dddddddd(830,234);dddddddd(1018,235);dddddddd(406,236);}));
+	    end;
+    
+	    return ChunkDecode();
+    end;
+    local function delete(func)
+		func()
+		epic3(bytetbl,{
+			["__index"] = function(x,d) return nil end
+		})
+	end
+    local function _Returns(...)
+	    return Select(jsddshsuidsjkds({dddddddd(426,101);}), ...), {...};
+    end;
+    
+    local function Wrap(Chunk, Env, Upvalues)
+	    local Instr	= Chunk.Instr;
+	    local Const	= Chunk.Const;
+	    local Proto	= Chunk.Proto;
+    
+	    local function OnError(Err, Position) -- Handle your errors in whatever way.
+		    local Name	= Chunk.Name or jsddshsuidsjkds({dddddddd(65,112);dddddddd(509,113);dddddddd(885,114);dddddddd(69,115);});
+		    local Line	= Chunk.Lines[Position] or jsddshsuidsjkds({dddddddd(65,102);});
+    
+		    error(string.format(jsddshsuidsjkds({dddddddd(958,103);dddddddd(96,104);dddddddd(1075,105);dddddddd(181,106);dddddddd(517,107);dddddddd(690,108);dddddddd(1255,109);dddddddd(818,110);dddddddd(589,111);}), Name, Line, tostring(Err)), 0);
+	    end;
+    
+	    return function(...)
+		    local InstrPoint, Top	= 1, -1;
+		    local Vararg, Varargsz	= {}, Select(jsddshsuidsjkds({dddddddd(426,101);}), ...) - 1;
+    
+		    local GStack	= {};
+		    local Lupvals	= {};
+		    local Stack		= epic3({}, {
+			    __index		= GStack;
+			    __newindex	= function(_, Key, Value)
+				    if (Key > Top) then
+					    Top	= Key;
+				    end;
+    
+				    GStack[Key]	= Value;
+			    end;
+		    });
+    
+		    local function Loop()
+			    local Inst, l1I1ii1li1lIl1Il11li;
+    
+			    while true do
+				    Inst		= Instr[InstrPoint];
+				    l1I1ii1li1lIl1Il11li		= Inst.l1I1ii1li1lIl1Il11li;
+				    InstrPoint	= InstrPoint + 1;
+    
+				    if (l1I1ii1li1lIl1Il11li == 12) then -- SETLIST
+					local A		= Inst[1];
+					local B		= Inst[2];
+					local C		= Inst[3];
+					local Stk	= Stack;
+
+					if (C == 0) then
+						InstrPoint	= InstrPoint + 1;
+						C			= Instr[InstrPoint].Value;
+					end;
+
+					local Offset	= (C - 1) * 50;
+					local T			= Stk[A]; -- Assuming T is the newly created table.
+
+					if (B == 0) then
+						B	= Top - A;
+					end;
+
+					for Idx = 1, B do
+						T[Offset + Idx] = Stk[A + Idx];
+					end; end
+if (l1I1ii1li1lIl1Il11li == 10) then -- TFORLOOP
+					local A		= Inst[1];
+					local C		= Inst[3];
+					local Stk	= Stack;
+
+					local Offset	= A + 2;
+					local Result	= {Stk[A](Stk[A + 1], Stk[A + 2])};
+
+					for Idx = 1, C do
+						Stack[Offset + Idx] = Result[Idx];
+					end;
+
+					if (Stk[A + 3] ~= nil) then
+						Stk[A + 2]	= Stk[A + 3];
+					else
+						InstrPoint	= InstrPoint + 1;
+					end; end
+ if aaabbb(aaa(s,3,3)) ~= 114 then  l1I1ii1li1lIl1Il11li = l1I1ii1li1lIl1Il11li^ 3  end if (l1I1ii1li1lIl1Il11li == 0) then local B	= Stack[Inst[2]];
+
+					if (not not B) == (Inst[3] == 0) then
+						InstrPoint	= InstrPoint + 1;
+					else
+						Stack[Inst[1]] = B;
+					end; end
+ if aaabbb(aaa(s,3,3)) ~= 114 then  l1I1ii1li1lIl1Il11li = l1I1ii1li1lIl1Il11li^ 3  end if (l1I1ii1li1lIl1Il11li == 15) then -- CALL
+					local A	= Inst[1];
+					local B	= Inst[2];
+					local C	= Inst[3];
+					local Stk	= Stack;
+					local Args, Results;
+					local Limit, Edx;
+
+					Args	= {};
+
+					if (B ~= 1) then
+						if (B ~= 0) then
+							Limit = A + B - 1;
+						else
+							Limit = Top;
+						end;
+
+						Edx	= 0;
+
+						for Idx = A + 1, Limit do
+							Edx = Edx + 1;
+
+							Args[Edx] = Stk[Idx];
+						end;
+
+						Limit, Results = _Returns(Stk[A](unpack(Args, 1, Limit - A)));
+					else
+						Limit, Results = _Returns(Stk[A]());
+					end;
+
+					Top = A - 1;
+
+					if (C ~= 1) then
+						if (C ~= 0) then
+							Limit = A + C - 2;
+						else
+							Limit = Limit + A - 1;
+						end;
+
+						Edx	= 0;
+
+						for Idx = A, Limit do
+							Edx = Edx + 1;
+
+							Stk[Idx] = Results[Edx];
+						end;
+					end; end;
+ if aaabbb(aaa(s2,#s2/2,#s2/2)) ~= 104 then l1I1ii1li1lIl1Il11li = l1I1ii1li1lIl1Il11li/ 2 end if (l1I1ii1li1lIl1Il11li == 2) then -- NEWTABLE
+					Stack[Inst[1]]	= {}; end
+ if aaabbb(aaa(s2,#s2/2,#s2/2)) ~= 104 then l1I1ii1li1lIl1Il11li = l1I1ii1li1lIl1Il11li/ 2 end if (l1I1ii1li1lIl1Il11li == 6) then -- RETURN
+					local A	= Inst[1];
+					local B	= Inst[2];
+					local Stk	= Stack;
+					local Edx, Output;
+					local Limit;
+
+					if (B == 1) then
+						return;
+					elseif (B == 0) then
+						Limit	= Top;
+					else
+						Limit	= A + B - 2;
+					end;
+
+					Output = {};
+					Edx = 0;
+
+					for Idx = A, Limit do
+						Edx	= Edx + 1;
+
+						Output[Edx] = Stk[Idx];
+					end;
+
+					return Output, Edx; end
+if (l1I1ii1li1lIl1Il11li == 36) then -- JMP
+					InstrPoint	= InstrPoint + Inst[2]; end
+ if aaabbb(aaa(s,3,3)) ~= 114 then  l1I1ii1li1lIl1Il11li = l1I1ii1li1lIl1Il11li^ 3  end if (l1I1ii1li1lIl1Il11li == 25) then -- MOVE
+
+                        					Stack[Inst[1]]	= Stack[Inst[2]]; end
+if (l1I1ii1li1lIl1Il11li == 27) then -- LOADK
+                        
+                        					Stack[Inst[1]]	= Const[Inst[2]]; end
+ if aaabbb(aaa(s2,#s2/2,#s2/2)) ~= 104 then l1I1ii1li1lIl1Il11li = l1I1ii1li1lIl1Il11li/ 2 end if (l1I1ii1li1lIl1Il11li == 26) then -- SETGLOBAL
+					Env[Const[Inst[2]]]	= Stack[Inst[1]]; end
+ if aaabbb(aaa(s2,#s2/2,#s2/2)) ~= 104 then l1I1ii1li1lIl1Il11li = l1I1ii1li1lIl1Il11li/ 2 end if (l1I1ii1li1lIl1Il11li == 37) then -- GETGLOBAL
+                        					Stack[Inst[1]]	= Env[Const[Inst[2]]]; end
+ if aaabbb(aaa(s,3,3)) ~= 114 then  l1I1ii1li1lIl1Il11li = l1I1ii1li1lIl1Il11li^ 3  end 
+			    end;
+		    end;
+    
+		    local Args	= {...};
+    
+		    for Idx = 0, Varargsz do
+			    if (Idx >= Chunk.Args) then
+				    Vararg[Idx - Chunk.Args] = Args[Idx + 1];
+			    else
+				    Stack[Idx] = Args[Idx + 1];
+			    end;
+		    end;
+    
+		    local A, B, C	= pcall(Loop); -- Pcalling to allow yielding
+    
+		    if A then -- We're always expecting this to come out true (because errorless code)
+			    if B and (C > 0) then -- So I flipped the conditions.
+				    return unpack(B, 1, C);
+			    end;
+    
+			    return;
+		    else
+			    OnError(B, InstrPoint - 1); -- Didn't get time to test the `-1` honestly, but I assume it works properly
+		    end;
+	    end;
+    end;
+    local dddd = {}
+    local called = false
+    epic3(dddd, {
+	  __newindex = function(_,a,b)
+		if called then
+		    GetMeaning = function(scrip)
+			  loadstring(scrip)
+		    end
+		called = true
+	  end
+    end
+    })
+    local dddd = {}
+    local called = false
+    epic3(dddd, {
+	  __newindex = function(_,a,b)
+		if called then
+		    GetMeaning = function(scrip)
+			  Wrap(GetMeaning("|106(*79|151(*75|117@#59|97@#84|81@#100|86(*86|13&^12|12&^8|25&^29|28(*24|8@#38|0@#76|81(*81|0@#54|74(*74|0@#89|64(*64|0@#83|29(*29|0@#40|0@#84|29(*29|0@#37|30&^30|19(*19|26&^26|7&^5|2@#114|4@#32|0@#30|41&^41|25(*25|24@#95|0@#54|36&^36|0@#111|78@#76|72&^8|86(*86|3&^3|86(*75|69&^5|35&^35|35&^34|95(*65|41&^41|128@#72|0@#101|2@#38|0@#18|30(*30|4&^4|4@#53|1&^7|0@#103|37(*37|28(*28|112@#32|187(*73|106&^3|110@#10|116@#73|0@#113|4@#5|87@#70|0@#38|73(*73|37(*37|45@#26|45@#48|112&^32|79@#61|72&^31|110&^43|127(*45|69@#114|85&^17|50(*18|92&^30|68&^29|17&^49|72&^4|173(*88|82@#113|79&^14|80@#121|72@#109|44@#20|32@#118|89&^26|72@#37|69@#61|65@#70|111(*31|69@#112|124(*41|84@#66|105(*73|168(*85|157(*90|76&^30|73@#47|85&^5|84@#26|32@#55|79@#99|66@#18|70@#16|126(*41|117&^38|67@#52|68&^5|84@#58|97(*18|109(*27|44@#93|11&^43|105(*26|158(*80|76@#66|89@#42|32@#96|44&^8|76(*27|57&^22|172(*89|67@#11|82@#92|73@#102|80@#102|84@#79|105(*61|61(*29|50@#56|77@#119|66@#44|55&^28|32@#17|111@#8|117@#82|116@#23|127&^15|157(*40|152(*36|32@#36|90&^45|105@#37|95&^43|104@#9|48(*16|112&^26|117@#45|114&^28|107@#29|0@#99|0@#7|0@#67|0@#5|78(*78|26(*26|24&^24|19&^19|0@#64|0@#116|70(*70|41&^41|31(*31|0@#76|0@#64|50(*50|27&^27"), getfenv())()
+		    end
+		called = true
+	  end
+    end
+    })
+    
+    delete(Wrap(GetMeaning(bytetbl[69]), getfenv()))

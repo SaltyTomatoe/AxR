@@ -120,8 +120,9 @@ bot.on("message",async message => {
 				child("java -jar "+__dirname+"\\ObfuscatorOUTPUT.jar " + parameters, function(err, data) {
 					let thingy = data.toString()
 					var arr = thingy.split("|");
+					console.log(thingy)
 					try{
-						child("lua mainHelpers\\minify.lua", parameters, function(err, dataa) {
+						child("lua " + __dirname + "mainHelpers\\minify.lua", parameters, function(err, dataa) {
 							let success = new discord.RichEmbed()
 							success.setAuthor("AXR")
 							success.setColor("#c1b0e8")
