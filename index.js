@@ -18,6 +18,7 @@ success.setFooter("This message will auto delete in 30 seconds for security reas
 /////CONFIG
 var prefix = ";"
 var port = 80
+var canObfuscate = true
 //DONE
 function msleep(n) {
     Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, n);
@@ -25,7 +26,6 @@ function msleep(n) {
   function sleep(n) {
     msleep(n*1000);
   }
-
 bot.on("ready", async () => {
     //bot.user.setActivity("Call of Duty Blackout");
     bot.user.setActivity("with new obfuscation stuff", {type: "PLAYING"});
@@ -92,7 +92,7 @@ bot.on("message",async message => {
         messageArray = first.message.content.split(" ");
         cmd = messageArray[0];
         args = messageArray.slice(1);
-		if(cmd===";obfuscate" && isObfuscating == false){
+		if(cmd===";obfuscate" && isObfuscating == false && canObfuscate == true){
 			if(message.attachments.first()){
 			let extension = getFileExtension(message.attachments.first().filename)
 			if(extension == "lua"){
@@ -117,7 +117,7 @@ bot.on("message",async message => {
 				//console.log("Compress enabled!")
 			}
 			try{
-				child("java -jar C:\\Users\\2022c\\Desktop\\coding\\DiscordBotTesting\\EncryptionBotv2\\ObfuscatorOUTPUT.jar" + parameters, function(err, data) {
+				child("java -jar "+__dirname+"\\ObfuscatorOUTPUT.jar " + parameters, function(err, data) {
 					let thingy = data.toString()
 					var arr = thingy.split("|");
 					try{
@@ -162,8 +162,10 @@ bot.on("message",async message => {
 				isObfuscating = false
 				console.log(e)
 			}
-        	}else if(cmd==";obfuscate"){
+        	}else if(cmd==";obfuscate" && canObfuscate==true){
 			message.channel.send("Please wait while another script is being obfuscated!")
+		}else if(canObfuscate == false){
+			message.channel.send("Sorry, obfuscation is currently disabled")
 		}
     }else{
         let messageArray = message.content.split(" ");
@@ -270,14 +272,13 @@ function write(stream,data, cb) {
 app.post("/obfuscate",function(req,res){
 	if(isObfuscating){
 		res.send("Please wait for a script to finish obfuscating!")
-	}else{
-		console.log(req.body)
+	}else if(canObfuscate == true){
 		isObfuscating = true
 		var stream = fs.createWriteStream("AXR_in.lua");
 		stream.on("error",function(x){console.log(x)})
 		write(stream,req.body.toObfuscate, () => {
 			console.log("Done")
-                  child("java -jar C:\\Users\\2022c\\Desktop\\coding\\DiscordBotTesting\\EncryptionBotv2\\ObfuscatorOUTPUT.jar", function(err, data) {
+                  child("java -jar "+__dirname+"\\ObfuscatorOUTPUT.jar", function(err, data) {
 				try{
 					child("lua mainHelpers\\minify.lua", {}, function(err, dataa) {
 						fs.readFile("C:\\Users\\2022c\\Desktop\\coding\\DiscordBotTesting\\EncryptionBotv2\\AXR_out.lua",function(err,data){
@@ -296,5 +297,8 @@ app.post("/obfuscate",function(req,res){
 			isObfuscating = false
 		});
 
+	}else if(canObfuscate==false){
+		res.send("Sorry! The obfuscator is currently disabled")
+		res.end()
 	}
 })
