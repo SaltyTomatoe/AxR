@@ -199,11 +199,12 @@ module.exports.info = {
 
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-     
+app.engine("html")
+
 app.listen(4000, function () {
 
 	app.get('/', function (req, res) {
-		res.send('Hello World!');
+		res.render("./index.html")
 	});
 
 	app.get("/discord",function(req,res){
