@@ -1,3 +1,4 @@
+print'hi'
 print("hi this is epic test lol")
 
 c = {"hi","this","a","table"}

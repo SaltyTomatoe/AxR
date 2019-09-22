@@ -44,8 +44,8 @@ fs.readdir("./commands/", (err, files) =>{
 });
 var isObfuscating = false
 bot.on("message",async message => {
-    if(message.author.bot) return;
-    if(message.attachments.size>0&&message.channel.type=="dm"){
+    	if(message.author.bot) return;
+    	if(message.attachments.size>0&&message.channel.type=="dm"){
         let first = message.attachments.first()
         messageArray = first.message.content.split(" ");
         cmd = messageArray[0];
@@ -76,43 +76,46 @@ bot.on("message",async message => {
 			try{
 				child("java -jar "+__dirname+"/ObfuscatorOUTPUT.jar " + parameters, function(err, data) {
 					let thingy = data.toString()
-					var arr = thingy.split("|");
 					console.log(thingy)
-					try{
-						child("lua " + __dirname + "/mainHelpers/minify.lua", parameters, function(err, dataa) {
-							let success = new discord.RichEmbed()
-							success.setAuthor("AXR")
-							success.setColor("#c1b0e8")
-							success.setTitle("Obfuscator")
-							success.setFooter("This message will auto delete in 30 seconds for security reasons")
-							success.setTimestamp()
-							success.addField(":moneybag: Finished Obfuscating :moneybag:",`:ok_hand:`)
-							let data = require("./obfuscation_stats.json")
-							if(!data["USER_STATS"][message.author.id]){
-							data["USER_STATS"][message.author.id]={
-								"times":0
-							}
-							}
-							data["USER_STATS"][message.author.id]={
-							"times":data["USER_STATS"][message.author.id].times+1
-							}
-							data["OBF_STATS"].times = data["OBF_STATS"].times + 1
-							fs.writeFile("./obfuscation_stats.json",JSON.stringify(data),(err)=>{
-							if(err)console.log(err)
-							})
-							message.channel.send(success).then(msg => {
-								msg.delete(30000)
-							})
-							.catch(err => console.log(err));
-							message.channel.send("", { files: [`./${nameOfFinal}`] }).then(msg => {
-								msg.delete(30000)
-							})
-							.catch(err => console.log(err));
-						});
-						isObfuscating = false
-					}catch(e){
-						console.log(e)
-						isObfuscating = false
+					if(thingy=="CODE\NCONSTANTS\NDEBUG\NFinished" || "CODE\NCONSTANTS\NDEBUG"){
+						try{
+							child("lua " + __dirname + "/mainHelpers/minify.lua", parameters, function(err, dataa) {
+								let success = new discord.RichEmbed()
+								success.setAuthor("AXR")
+								success.setColor("#c1b0e8")
+								success.setTitle("Obfuscator")
+								success.setFooter("This message will auto delete in 30 seconds for security reasons")
+								success.setTimestamp()
+								success.addField(":moneybag: Finished Obfuscating :moneybag:",`:ok_hand:`)
+								let data = require("./obfuscation_stats.json")
+								if(!data["USER_STATS"][message.author.id]){
+								data["USER_STATS"][message.author.id]={
+									"times":0
+								}
+								}
+								data["USER_STATS"][message.author.id]={
+								"times":data["USER_STATS"][message.author.id].times+1
+								}
+								data["OBF_STATS"].times = data["OBF_STATS"].times + 1
+								fs.writeFile("./obfuscation_stats.json",JSON.stringify(data),(err)=>{
+								if(err)console.log(err)
+								})
+								message.channel.send(success).then(msg => {
+									msg.delete(30000)
+								})
+								.catch(err => console.log(err));
+								message.channel.send("", { files: [`./${nameOfFinal}`] }).then(msg => {
+									msg.delete(30000)
+								})
+								.catch(err => console.log(err));
+							});
+							isObfuscating = false
+						}catch(e){
+							console.log(e)
+							isObfuscating = false
+						}
+					}else{
+						message.channel.send(`AxR has detected errors in your code, please test it and make sure everything works. If this error persists please contact the owner`)
 					}
 				});
 				isObfuscating = false
@@ -120,6 +123,7 @@ bot.on("message",async message => {
 				isObfuscating = false
 				console.log(e)
 			}
+			isObfuscating = false
         	}else if(cmd==";obfuscate" && canObfuscate==true){
 			message.channel.send("Please wait while another script is being obfuscated!")
 		}else if(canObfuscate == false){
@@ -195,18 +199,23 @@ module.exports.info = {
     prefix:prefix,
     directory:__dirname
 }
+
+/*setInterval(function(){
+	isObfuscating = false
+},1000)*/
 //WEBSITE
 
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-app.engine("html")
-
-app.listen(4000, function () {
-
+app.use(express.static(__dirname))
+app.use(express.static("./views"))
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+app.set("trust proxy")
+app.listen(80, function () {
 	app.get('/', function (req, res) {
-		res.render("./index.html")
+		res.render("index.ejs")
 	});
-
 	app.get("/discord",function(req,res){
 		res.redirect("https://discord.gg/invite/3y7XbzR")
 	})
