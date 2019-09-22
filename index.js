@@ -117,6 +117,7 @@ bot.on("message",async message => {
 				//console.log("Compress enabled!")
 			}
 			try{
+				console.log(__dirname+"\\ObfuscatorOUTPUT.jar")
 				child("java -jar "+__dirname+"\\ObfuscatorOUTPUT.jar " + parameters, function(err, data) {
 					let thingy = data.toString()
 					var arr = thingy.split("|");
