@@ -13,7 +13,7 @@ module.exports.run = async(bot,message,args)=>{
         .setTimestamp()
         .addField(`How To Obfuscate`,`Go to the bot's dm, send your .lua or .txt file with the comment ${index.info.prefix}obfuscate`)
         .addField(`Arguments`,`Currently NONE. Due to the new bytecode format, bytecode compression doesn't exist. Custom Variables still not in affect, sorry`)
-        .addField(`Additional Info`,`Your custom variable cannot contain these characters:\n**~ ! @ # $ % ^ & * ( ) + } { | " : < > ? }** as well as any spaces.`)
+        .addField(`Additional Info`,`This will not make your script 100% secure! If I could make the VM reorder itself every second I would :(`)
         message.channel.send(toSend);
     }
 }
