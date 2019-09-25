@@ -26,6 +26,34 @@ function msleep(n) {
   function sleep(n) {
     msleep(n*1000);
   }
+String.prototype.obfs = function(key, n = 126) {
+	// return String itself if the given parameters are invalid
+	if (!(typeof(key) === 'number' && key % 1 === 0)
+	  || !(typeof(key) === 'number' && key % 1 === 0)) {
+	  return this.toString();
+	}
+    
+	var chars = this.toString().split('');
+    
+	for (var i = 0; i < chars.length; i++) {
+	  var c = chars[i].charCodeAt(0);
+    
+	  if (c <= n) {
+	    chars[i] = String.fromCharCode((chars[i].charCodeAt(0) + key) % n);
+	  }
+	}
+    
+	return chars.join('');
+};
+String.prototype.defs = function(key, n = 126) {
+	// return String itself if the given parameters are invalid
+	if (!(typeof(key) === 'number' && key % 1 === 0)
+	  || !(typeof(key) === 'number' && key % 1 === 0)) {
+	  return this.toString();
+	}
+    
+	return this.toString().obfs(n - key);
+};
 bot.on("ready", async () => {
     bot.user.setActivity("with new obfuscation stuff", {type: "PLAYING"});
     console.log("Finished setup proccesses.")
@@ -64,11 +92,10 @@ bot.on("message",async message => {
 			}
 			let nameOfFinal = "AXR_out.lua"//randomstring(20)
 			let retr = await downloadAttachment(first.url,"AXR_in.lua")
-			let key = randomstring(16)
-			let iv = randomstring(16)
 			let userId = message.author.id
-			userId = main.encrypt(userId,iv,key)
-			var parameters = " ";
+			//userId = main.encrypt(userId,iv,key)
+			let parameters = "key:" + userId.obfs(16) + " "
+			console.log(parameters)
 			if(args.includes("compress")){
 				parameters = parameters + "compress "
 				//console.log("Compress enabled!")
@@ -76,27 +103,26 @@ bot.on("message",async message => {
 			try{
 				child("java -jar "+__dirname+"/ObfuscatorOUTPUT.jar " + parameters, function(err, data) {
 					let thingy = data.toString()
-					console.log(thingy)
 					if(thingy=="CODE\NCONSTANTS\NDEBUG\NFinished" || "CODE\NCONSTANTS\NDEBUG"){
 						try{
 							child("lua " + __dirname + "/mainHelpers/minify.lua", parameters, function(err, dataa) {
+								let data = require("./obfuscation_stats.json")
+								if(!data["USER_STATS"][message.author.id]){
+									data["USER_STATS"][message.author.id]={
+										"times":0
+									}
+								}
+								data["USER_STATS"][message.author.id]={
+									"times":data["USER_STATS"][message.author.id].times+1
+								}
+								data["OBF_STATS"].times = data["OBF_STATS"].times + 1
 								let success = new discord.RichEmbed()
 								success.setAuthor("AXR")
 								success.setColor("#c1b0e8")
 								success.setTitle("Obfuscator")
 								success.setFooter("This message will auto delete in 30 seconds for security reasons")
 								success.setTimestamp()
-								success.addField(":moneybag: Finished Obfuscating :moneybag:",`:ok_hand:`)
-								let data = require("./obfuscation_stats.json")
-								if(!data["USER_STATS"][message.author.id]){
-								data["USER_STATS"][message.author.id]={
-									"times":0
-								}
-								}
-								data["USER_STATS"][message.author.id]={
-								"times":data["USER_STATS"][message.author.id].times+1
-								}
-								data["OBF_STATS"].times = data["OBF_STATS"].times + 1
+								success.addField(":moneybag: Finished Obfuscating :moneybag:",`Estimated obfuscation count: ${data["OBF_STATS"].times}`)
 								fs.writeFile("./obfuscation_stats.json",JSON.stringify(data),(err)=>{
 								if(err)console.log(err)
 								})
@@ -208,11 +234,10 @@ module.exports.info = {
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(express.static(__dirname))
-app.use(express.static("./views"))
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.set("trust proxy")
-app.listen(80, function () {
+app.listen(port, function () {
 	app.get('/', function (req, res) {
 		res.render("index.ejs")
 	});
@@ -220,4 +245,10 @@ app.listen(80, function () {
 		res.redirect("https://discord.gg/invite/3y7XbzR")
 	})
 
+	app.get("/scripts/hub",function(req,res){
+		res.sendFile(__dirname + "/views/scripts/hub.txt")
+	})
+	app.get("/scripts/ui",function(req,res){
+		res.sendFile(__dirname + "/views/scripts/ui.txt")
+	})
 });

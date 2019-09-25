@@ -12,7 +12,7 @@ module.exports.run = async(bot,message,args)=>{
         .setColor(index.embeds.color)
         .setTimestamp()
         .addField(`How To Obfuscate`,`Go to the bot's dm, send your .lua or .txt file with the comment ${index.info.prefix}obfuscate`)
-        .addField(`Arguments`,`After ${index.info.prefix}obfuscate you can add an aditional comment saying what variable you want.\nFor example, if you wanted your custom variable to be "HOT_SEXY_WAFFLES" then you'd say\n${index.info.prefix}obfuscate HOT_SEXY_WAFFLES\nIf you do not specify a custom variable then the default variable, SKP_ will be substituded.`)
+        .addField(`Arguments`,`Currently NONE. Due to the new bytecode format, bytecode compression doesn't exist. Custom Variables still not in affect, sorry`)
         .addField(`Additional Info`,`Your custom variable cannot contain these characters:\n**~ ! @ # $ % ^ & * ( ) + } { | " : < > ? }** as well as any spaces.`)
         message.channel.send(toSend);
     }

@@ -1,17 +1,21 @@
 const discord = require("discord.js")
 const users = require('../users')
+String.prototype.defs = function(key, n = 126) {
+	// return String itself if the given parameters are invalid
+	if (!(typeof(key) === 'number' && key % 1 === 0)
+	  || !(typeof(key) === 'number' && key % 1 === 0)) {
+	  return this.toString();
+	}
+    
+	return this.toString().obfs(n - key);
+};
 module.exports.run = async(bot,message,args)=>{
-    console.log("RAN")
-    console.log(message.author.id)
-    if(message.author.id===232569501080748032 || 487015678050566154){
-        try{
+    if(message.author.id===232569501080748032 || 487015678050566154 || 487015678050566154){
+	  try{//mgoeaa5rzvgpahnb82keq1lg6is9yxgnmrzxfsOCNzgYUys1vhrp8tZOwfWaC1w78+d+EjygitpTs= "key:" + key + iv + userId + " "
+	  //iv = eaa5rzvgpahnb82k
         let encrypted = args[0]
-        let enc1 = encrypted.split("(")
-        let enc2 = enc1[1].split(")")
-        let iv = enc1[0]
-        let key = enc2[1]
-        let userid = enc2[0]
-        let toRet = users.decrypt(userid,iv,key)
+        let key = encrypted.substr(3,16)
+	  let toRet = key.defs(16)
         return message.channel.send(`Decrypted! User id is:${toRet} `)
         }catch(e){
             message.channel.send(`${e}`)
