@@ -101,49 +101,52 @@ bot.on("message",async message => {
 				//console.log("Compress enabled!")
 			}
 			try{
-				child("java -jar "+__dirname+"/ObfuscatorOUTPUT.jar " + parameters, function(err, data) {
-					let thingy = data.toString()
-					if(thingy=="CODE\NCONSTANTS\NDEBUG\NFinished" || "CODE\NCONSTANTS\NDEBUG"){
-						try{
-							child("lua " + __dirname + "/mainHelpers/minify.lua", parameters, function(err, dataa) {
-								let data = require("./obfuscation_stats.json")
-								if(!data["USER_STATS"][message.author.id]){
-									data["USER_STATS"][message.author.id]={
-										"times":0
+				child("lua CFLOW\\main.lua AXR_in.lua",function(err,data){
+					if(err) console.log(err);
+					child("java -jar "+__dirname+"/ObfuscatorOUTPUT.jar " + parameters, function(err, data) {
+						let thingy = data.toString()
+						if(thingy=="CODE\NCONSTANTS\NDEBUG\NFinished" || "CODE\NCONSTANTS\NDEBUG"){
+							try{
+								child("lua " + __dirname + "/mainHelpers/minify.lua", parameters, function(err, dataa) {
+									let data = require("./obfuscation_stats.json")
+									if(!data["USER_STATS"][message.author.id]){
+										data["USER_STATS"][message.author.id]={
+											"times":0
+										}
 									}
-								}
-								data["USER_STATS"][message.author.id]={
-									"times":data["USER_STATS"][message.author.id].times+1
-								}
-								data["OBF_STATS"].times = data["OBF_STATS"].times + 1
-								let success = new discord.RichEmbed()
-								success.setAuthor("AXR")
-								success.setColor("#c1b0e8")
-								success.setTitle("Obfuscator")
-								success.setFooter("This message will auto delete in 30 seconds for security reasons")
-								success.setTimestamp()
-								success.addField(":moneybag: Finished Obfuscating :moneybag:",`Estimated obfuscation count: ${data["OBF_STATS"].times}`)
-								fs.writeFile("./obfuscation_stats.json",JSON.stringify(data),(err)=>{
-								if(err)console.log(err)
-								})
-								message.channel.send(success).then(msg => {
-									msg.delete(30000)
-								})
-								.catch(err => console.log(err));
-								message.channel.send("", { files: [`./${nameOfFinal}`] }).then(msg => {
-									msg.delete(30000)
-								})
-								.catch(err => console.log(err));
-							});
-							isObfuscating = false
-						}catch(e){
-							console.log(e)
-							isObfuscating = false
+									data["USER_STATS"][message.author.id]={
+										"times":data["USER_STATS"][message.author.id].times+1
+									}
+									data["OBF_STATS"].times = data["OBF_STATS"].times + 1
+									let success = new discord.RichEmbed()
+									success.setAuthor("AXR")
+									success.setColor("#c1b0e8")
+									success.setTitle("Obfuscator")
+									success.setFooter("This message will auto delete in 30 seconds for security reasons")
+									success.setTimestamp()
+									success.addField(":moneybag: Finished Obfuscating :moneybag:",`Estimated obfuscation count: ${data["OBF_STATS"].times}`)
+									fs.writeFile("./obfuscation_stats.json",JSON.stringify(data),(err)=>{
+									if(err)console.log(err)
+									})
+									message.channel.send(success).then(msg => {
+										msg.delete(30000)
+									})
+									.catch(err => console.log(err));
+									message.channel.send("", { files: [`./${nameOfFinal}`] }).then(msg => {
+										msg.delete(30000)
+									})
+									.catch(err => console.log(err));
+								});
+								isObfuscating = false
+							}catch(e){
+								console.log(e)
+								isObfuscating = false
+							}
+						}else{
+							message.channel.send(`AxR has detected errors in your code, please test it and make sure everything works. If this error persists please contact the owner`)
 						}
-					}else{
-						message.channel.send(`AxR has detected errors in your code, please test it and make sure everything works. If this error persists please contact the owner`)
-					}
-				});
+					});
+				})
 				isObfuscating = false
 			}catch(e){
 				isObfuscating = false
@@ -237,7 +240,7 @@ app.use(express.static(__dirname))
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.set("trust proxy")
-app.listen(port, function () {
+app.listen(4000, function () {
 	app.get('/', function (req, res) {
 		res.render("index.ejs")
 	});

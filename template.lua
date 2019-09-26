@@ -32,6 +32,7 @@ local function ascii_base(s)
     
     local instrDebug = -1;
     
+    
     local aaa = string.sub
     local aaabbb = string.byte
     local ulololo = string.find
@@ -287,10 +288,10 @@ local function ascii_base(s)
     
 			    Instr[Idx]	= Inst;
 		    end;
-    
+		--//Where junk constants go 
 		    local hasExtraShit = gFloat()
 		if (hasExtraShit == 1) then
-		    for Idx = 1, 5 do
+		    for Idx = 1, %%TrashConstantNumber%% do
 			  gBits8();
 			  local debug = Sub(gString(nil, false), 1, -2);
 		    end
@@ -340,7 +341,7 @@ local function ascii_base(s)
     
 	    do -- Most of this chunk I was too lazy to reformat or change
 		    assert(gString(4) == "\27AXR", %%STRING10%%);
-		    local epicOther = "%%USERIDSTUFF%%"
+    
 		    gBits8();--lua version
     
 		    gBits8(); -- Probably version control.
