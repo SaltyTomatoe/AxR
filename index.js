@@ -245,7 +245,7 @@ app.listen(4000, function () {
 		res.render("index.ejs")
 	});
 	app.get("/discord",function(req,res){
-		res.redirect("https://discord.gg/invite/3y7XbzR")
+		res.redirect("https://discord.gg/invite/c2nJf2F")
 	})
 
 	app.get("/scripts/hub",function(req,res){
