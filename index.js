@@ -240,7 +240,7 @@ app.use(express.static(__dirname))
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 app.set("trust proxy")
-app.listen(4000, function () {
+app.listen(port, function () {
 	app.get('/', function (req, res) {
 		res.render("index.ejs")
 	});
